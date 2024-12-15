@@ -1,0 +1,9 @@
+spring:
+  application:
+    name: QuickConvert
+server:
+  servlet:
+    encoding:
+      enabled: true
+      force: true
+      charset: UTF-8
