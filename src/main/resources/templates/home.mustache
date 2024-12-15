@@ -1,0 +1,1028 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>홈</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: white;
+            color: #4380d5;
+            overflow: hidden;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .background-wave {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: linear-gradient(transparent, rgba(0, 0, 0, 0.8));
+            overflow: hidden;
+        }
+
+        .background-wave img {
+            width: 100%;
+            height: auto;
+        }
+
+        h2 {
+            font-size: 28px;
+            margin: 0;
+            margin-top: 20px;
+        }
+
+        p {
+            font-size: 16px;
+            margin-bottom: 2em;
+        }
+
+        .file-form {
+            display: flex;
+            align-items: center;
+        }
+
+        #conversion-choice {
+            font-size: 14px;
+            border: 1px solid #4380d5;
+            border-radius: 5px;
+            padding: 0.5em 1em;
+            color: #006aff;
+            cursor: pointer;
+            margin-right: 20px;
+            outline: none;
+        }
+
+        .file-form input {
+            padding: 8px;
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+            background-color: #f4f4f4;
+            width: 300px;
+            color: transparent;
+        }
+
+        .file-form input::-webkit-file-upload-button {
+            visibility: hidden;
+        }
+
+        .file-form input::before {
+            content: "파일 선택";
+            display: inline-block;
+            background: #4380d5;
+            border: 1px solid #4380d5;
+            border-radius: 5px;
+            padding: 0.5em 1em;
+            color: white;
+            cursor: pointer;
+            box-shadow: 0 0 8px 1px #a0c8ff;
+        }
+
+        .file-form input:hover::before {
+            background: #4380d5;
+            box-shadow: 0 0 8px 1px #a0c8ff;
+        }
+
+        .file-form button {
+            padding: 1em 2em;
+            margin-left: 1em;
+            background-color: #4380d5;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            box-shadow: 0 0 8px 1px #a0c8ff;
+        }
+
+        .file-form button:hover {
+            background-color: #4380d5;
+        }
+
+        .profile-images {
+            display: flex;
+            justify-content: center;
+            margin: 1em 0;
+        }
+
+        .profile-images img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            margin: 0 5px;
+        }
+
+        #join-text {
+            margin-top: 30px;
+            font-size: 15px;
+            color: #4380d5;
+        }
+
+        .floating-cube {
+            animation: float 4s infinite;
+            padding-bottom: 15px;
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-20px);
+            }
+        }
+
+        .cube-icon {
+            margin-bottom: 1em;
+        }
+
+        .cube-icon img {
+            width: 50px;
+            height: 50px;
+        }
+
+        .convert-options1 {
+            display: flex;
+            gap: 1em;
+            margin: 1em 0;
+            justify-content: center;
+        }
+
+        .convert-options1 label {
+            text-align: center;
+            cursor: pointer;
+        }
+
+        .convert-options1 input[type="radio"] {
+            display: none;
+        }
+
+        .convert-options1 label div {
+            width: 60px;
+            height: 40px;
+            border-radius: 50%;
+            background: #4380d53b;
+            border: 1px solid #4380d5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 8px 1px #a0c8ff;
+        }
+
+        .convert-options1 label span {
+            color: rgb(42, 42, 42);
+            font-size: 0.8em;
+        }
+
+        .convert-options2 {
+            display: flex;
+            gap: 1em;
+            margin: 1em 0;
+            justify-content: center;
+        }
+
+        .convert-options2 label {
+            text-align: center;
+            cursor: pointer;
+        }
+
+        .convert-options2 input[type="radio"] {
+            display: none;
+        }
+
+        .convert-options2 label div {
+            width: 60px;
+            height: 40px;
+            border-radius: 50%;
+            background: #4380d53b;
+            border: 1px solid #4380d5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 8px 1px #a0c8ff;
+        }
+
+        .convert-options2 label span {
+            color: rgb(42, 42, 42);
+            font-size: 0.8em;
+        }
+
+        #center-conversionUnitDiv {
+            display: flex;
+        }
+
+        #conversionUnit {
+            padding: 8px;
+            border: 1px solid #4380d5;
+            border-radius: 5px;
+            font-size: 15px;
+            background-color: #f4f4f4;
+            color: black;
+            width: 130px;
+            outline: none;
+            margin-right: 16px;
+            box-shadow: 0 0 8px 1px #a0c8ff;
+        }
+
+        #conversionResult1 {
+            padding: 8px;
+            border: 1px solid #4380d5;
+            border-radius: 5px;
+            font-size: 15px;
+            background-color: #f4f4f4;
+            color: black;
+            width: 130px;
+            outline: none;
+            margin-right: 20px;
+            box-shadow: 0 0 8px 1px #a0c8ff;
+        }
+
+        #conversionResult2 {
+            padding: 8px;
+            border: 1px solid #4380d5;
+            border-radius: 5px;
+            font-size: 1rem;
+            background-color: #f4f4f4;
+            color: black;
+            width: 100px;
+            outline: none;
+            margin-top: 18.5px;
+        }
+
+        #conversionUnitSelect1 {
+            font-size: 14px;
+            border: 1px solid #4380d5;
+            border-radius: 5px;
+            padding-left: 10px;
+            padding-right: 10px;
+            padding-top: 5px;
+            padding-bottom: 5px;
+            color: #006aff;
+            cursor: pointer;
+            margin-right: 20px;
+            outline: none;
+            margin-top: 10px;
+        }
+
+        #conversionUnitSelect2 {
+            font-size: 14px;
+            border: 1px solid #4380d5;
+            border-radius: 5px;
+            padding-left: 10px;
+            padding-right: 10px;
+            padding-top: 5px;
+            padding-bottom: 5px;
+            color: #006aff;
+            cursor: pointer;
+            margin-right: 20px;
+            outline: none;
+            margin-top: 10px;
+        }
+
+        #s {
+            display: flex;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="main-content">
+            <div class="cube-icon floating-cube">
+                <img src="conversionIcon.png" alt="Icon">
+            </div>
+            <h2 id="title">이미지 변환기</h2>
+            <p id="description">무료로 온라인 이미지를 변환하세요!</p>
+            <form class="file-form" id="file-upload-form">
+                <select name="conversion" id="conversion-choice">
+                    <option value="이미지 파일">이미지 파일</option>
+                    <option value="비디오 파일">비디오 파일</option>
+                    <option value="오디오 파일">오디오 파일</option>
+                    <option value="데이터 파일">데이터 파일</option>
+                    <option value="시간 단위">시간 단위</option>
+                    <option value="길이 단위">길이 단위</option>
+                    <option value="온도 단위">온도 단위</option>
+                    <option value="질량 단위">질량 단위</option>
+                    <option value="진수 계산">진수 계산</option>
+                    <option value="진동수 파장">진동수 파장</option>
+                </select>
+
+                <div id="form-and-submit">
+                    <input type="file" required id="file-form">
+                    <button type="submit" id="submit">변환 및 다운</button>
+                </div>
+
+                <div id="s">
+                    <div id="center-conversionUnitDiv"></div>
+                    <div id="resultInputDiv"></div>
+                </div>
+            </form>
+        </div>
+        <div id="among-content"><p class="file-name" id="file-name"></p></div>
+
+        <div id="sub-content">
+            <div class="convert-options2" id="convert-options-id2">
+                <label>
+                    <input type="radio" name="convert-type" value="jpeg">
+                    <div id="jpeg" class="type"><span id="jpeg-span">JPEG</span></div>
+                </label>
+                <label>
+                    <input type="radio" name="convert-type" value="gif">
+                    <div id="gif" class="type"><span id="gif-span">GIF</span></div>
+                </label>
+                <label>
+                    <input type="radio" name="convert-type" value="bmp">
+                    <div id="bmp" class="type"><span id="bmp-span">BMP</span></div>
+                </label>
+                <label>
+                    <input type="radio" name="convert-type" value="ico">
+                    <div id="ico" class="type"><span id="ico-span">ICO</span></div>
+                </label>
+                <label>
+                    <input type="radio" name="convert-type" value="psd">
+                    <div id="psd" class="type"><span id="psd-span">PSD</span></div>
+                </label>
+                <label>
+                    <input type="radio" name="convert-type" value="tiff">
+                    <div id="tiff" class="type"><span id="tiff-span">TIFF</span></div>
+                </label>
+                <label>
+                    <input type="radio" name="convert-type" value="webP">
+                    <div id="webP" class="type"><span id="webP-span">WEBP</span></div>
+                </label>
+            </div>
+            <div class="convert-options1" id="convert-options-id1">
+                <label>
+                    <input type="radio" name="convert-type" value="pdf">
+                    <div id="pdf" class="type"><span id="pdf-span">PDF</span></div>
+                </label>
+                <label>
+                    <input type="radio" name="convert-type" value="jpg">
+                    <div id="jpg" class="type"><span id="jpg-span">JPG</span></div>
+                </label>
+                <label>
+                    <input type="radio" name="convert-type" value="png">
+                    <div id="png" class="type"><span id="png-span">PNG</span></div>
+                </label>
+                <label>
+                    <input type="radio" name="convert-type" value="docx">
+                    <div id="docx" class="type"><span id="docx-span">DOCX</span></div>
+                </label>
+                <label>
+                    <input type="radio" name="convert-type" value="txt">
+                    <div id="txt" class="type"><span id="txt-span">TXT</span></div>
+                </label>
+                <label>
+                    <input type="radio" name="convert-type" value="svg">
+                    <div id="svg" class="type"><span id="svg-span">SVG</span></div>
+                </label>
+            </div>
+
+            <p id="join-text">변환할 형식을 선택하세요!</p>
+        </div>
+    </div>
+
+    <script>
+        let object = {
+            image: [
+                [ document.getElementById('pdf'), document.getElementById('pdf-span'), 0 ],
+                [ document.getElementById('jpg'), document.getElementById('jpg-span'), 0 ],
+                [ document.getElementById('png'), document.getElementById('png-span'), 0],
+                [ document.getElementById('docx'), document.getElementById('docx-span'), 0 ],
+                [ document.getElementById('txt'), document.getElementById('txt-span'), 0 ],
+                [ document.getElementById('svg'), document.getElementById('svg-span'), 0 ],
+                [ document.getElementById('jpeg'), document.getElementById('jpeg-span'), 0 ],
+                [ document.getElementById('gif'), document.getElementById('gif-span'), 0 ],
+                [ document.getElementById('bmp'), document.getElementById('bmp-span'), 0 ],
+                [ document.getElementById('ico'), document.getElementById('ico-span'), 0 ],
+                [ document.getElementById('psd'), document.getElementById('psd-span'), 0 ],
+                [ document.getElementById('tiff'), document.getElementById('tiff-span'), 0 ],
+                [ document.getElementById('webP'), document.getElementById('webP-span'), 0 ]
+            ],
+            video: [
+                [ document.getElementById('mp4'), document.getElementById('mp4-span'), 0 ],
+                [ document.getElementById('mov'), document.getElementById('mov-span'), 0 ],
+                [ document.getElementById('mkv'), document.getElementById('mkv-span'), 0 ],
+                [ document.getElementById('webm'), document.getElementById('webm-span'), 0 ],
+                [ document.getElementById('flv'), document.getElementById('flv-span'), 0 ],
+                [ document.getElementById('avi'), document.getElementById('avi-span'), 0 ]
+            ],
+            audio: [
+                [ document.getElementById('mp3'), document.getElementById('mp3-span'), 0 ],
+                [ document.getElementById('wav'), document.getElementById('wav-span'), 0 ],
+                [ document.getElementById('flac'), document.getElementById('flac-span'), 0 ],
+                [ document.getElementById('aac'), document.getElementById('aac-span'), 0 ]
+            ],
+            data_file: [
+                [ document.getElementById('json'), document.getElementById('json-span'), 0 ],
+                [ document.getElementById('xml'), document.getElementById('xml-span'), 0 ],
+                [ document.getElementById('csv'), document.getElementById('csv-span'), 0 ]
+            ],
+        };
+        let joinText = document.getElementById('join-text');
+
+        const title = document.getElementById('title');
+        const description = document.getElementById('description');
+        const select = document.getElementById('conversion-choice');
+        const targetElement1 = document.getElementById('convert-options-id1');
+        const targetElement2 = document.getElementById('convert-options-id2');
+
+        const imageTypeArray = ['pdf', 'jpg', 'png', 'docx', 'txt', 'svg', 'jpeg', 'gif', 'bmp', 'ico', 'psd', 'tiff', 'webP'];
+        const videoTypeArray = ['mp4', 'mov', 'mkv', 'webm', 'flv', 'avi'];
+        const audioTypeArray = ['mp3', 'wav', 'flac', 'aac'];
+        const dataFileTypeArray = ['json', 'xml', 'csv'];
+
+        const imageHtmlContent1 = `
+                <label>
+                    <input type="radio" name="convert-type" value="pdf">
+                    <div id="pdf" class="type"><span id="pdf-span">PDF</span></div>
+                </label>
+                <label>
+                    <input type="radio" name="convert-type" value="jpg">
+                    <div id="jpg" class="type"><span id="jpg-span">JPG</span></div>
+                </label>
+                <label>
+                    <input type="radio" name="convert-type" value="png">
+                    <div id="png" class="type"><span id="png-span">PNG</span></div>
+                </label>
+                <label>
+                    <input type="radio" name="convert-type" value="docx">
+                    <div id="docx" class="type"><span id="docx-span">DOCX</span></div>
+                </label>
+                <label>
+                    <input type="radio" name="convert-type" value="txt">
+                    <div id="txt" class="type"><span id="txt-span">TXT</span></div>
+                </label>
+                <label>
+                    <input type="radio" name="convert-type" value="svg">
+                    <div id="svg" class="type"><span id="svg-span">SVG</span></div>
+                </label>
+            `;
+        const imageHtmlContent2 = `
+                <label>
+                    <input type="radio" name="convert-type" value="jpeg">
+                    <div id="jpeg" class="type"><span id="jpeg-span">JPEG</span></div>
+                </label>
+                <label>
+                    <input type="radio" name="convert-type" value="gif">
+                    <div id="gif" class="type"><span id="gif-span">GIF</span></div>
+                </label>
+                <label>
+                    <input type="radio" name="convert-type" value="bmp">
+                    <div id="bmp" class="type"><span id="bmp-span">BMP</span></div>
+                </label>
+                <label>
+                    <input type="radio" name="convert-type" value="ico">
+                    <div id="ico" class="type"><span id="ico-span">ICO</span></div>
+                </label>
+                <label>
+                    <input type="radio" name="convert-type" value="psd">
+                    <div id="psd" class="type"><span id="psd-span">PSD</span></div>
+                </label>
+                <label>
+                    <input type="radio" name="convert-type" value="tiff">
+                    <div id="tiff" class="type"><span id="tiff-span">TIFF</span></div>
+                </label>
+                <label>
+                    <input type="radio" name="convert-type" value="webP">
+                    <div id="webP" class="type"><span id="webP-span">WEBP</span></div>
+                </label>
+            `;
+        const videoHtmlContent = `
+                <label>
+                    <input type="radio" name="convert-type" value="mp4">
+                    <div id="mp4" class="type"><span id="mp4-span">MP4</span></div>
+                </label>
+                <label>
+                    <input type="radio" name="convert-type" value="mov">
+                    <div id="mov" class="type"><span id="mov-span">MOV</span></div>
+                </label>
+                <label>
+                    <input type="radio" name="convert-type" value="mkv">
+                    <div id="mkv" class="type"><span id="mkv-span">MKV</span></div>
+                </label>
+                <label>
+                    <input type="radio" name="convert-type" value="webm">
+                    <div id="webm" class="type"><span id="webm-span">WEBM</span></div>
+                </label>
+                <label>
+                    <input type="radio" name="convert-type" value="flv">
+                    <div id="flv" class="type"><span id="flv-span">FLV</span></div>
+                </label>
+                <label>
+                    <input type="radio" name="convert-type" value="avi">
+                    <div id="avi" class="type"><span id="avi-span">AVI</span></div>
+                </label>
+            `;
+        const audioHtmlContent = `
+                <label>
+                    <input type="radio" name="convert-type" value="mp3">
+                    <div id="mp3" class="type"><span id="mp3-span">MP3</span></div>
+                </label>
+                <label>
+                    <input type="radio" name="convert-type" value="wav">
+                    <div id="wav" class="type"><span id="wav-span">WAV</span></div>
+                </label>
+                <label>
+                    <input type="radio" name="convert-type" value="flac">
+                    <div id="flac" class="type"><span id="flac-span">FLAC</span></div>
+                </label>
+                <label>
+                    <input type="radio" name="convert-type" value="aac">
+                    <div id="aac" class="type"><span id="aac-span">AAC</span></div>
+                </label>
+            `;
+        const dataFileHtmlContent = `
+                <label>
+                    <input type="radio" name="convert-type" value="json">
+                    <div id="json" class="type"><span id="json-span">JSON</span></div>
+                </label>
+                <label>
+                    <input type="radio" name="convert-type" value="xml">
+                    <div id="xml" class="type"><span id="xml-span">XML</span></div>
+                </label>
+                <label>
+                    <input type="radio" name="convert-type" value="csv">
+                    <div id="csv" class="type"><span id="csv-span">CSV</span></div>
+                </label>
+            `;
+        const timeHtmlContent = `
+                <div id="conversionUnitDiv-Select">
+                    <div id="conversionUnitDiv">
+                        <input type="text" id="conversionUnit">
+                    </div>
+                    <select name="conversionUnit" id="conversionUnitSelect1">
+                        <option value="초">초[s]</option>
+                        <option value="밀리초">밀리초[ms]</option>
+                        <option value="나노초">나노초[ns]</option>
+                        <option value="밀리초">피코초[ps]</option>
+                        <option value="나노초">펨토초[fs]</option>
+                        <option value="밀리초">아토초[as]</option>
+                        <option value="나노초">셰이크</option>
+                        <option value="밀리초">분[min]</option>
+                        <option value="나노초">시[h]</option>
+                        <option value="밀리초">일[d]</option>
+                        <option value="나노초">주</option>
+                        <option value="밀리초">달</option>
+                        <option value="나노초">년[y]</option>
+                    </select>
+                </div>
+                <div id="conversionUnitDiv-Select">
+                    <div id="conversionUnitDiv">
+                        <input type="text" id="conversionResult1">
+                    </div>
+                    <select name="conversionUnit" id="conversionUnitSelect2">
+                        <option value="초">초[s]</option>
+                        <option value="밀리초">밀리초[ms]</option>
+                        <option value="나노초">나노초[ns]</option>
+                        <option value="밀리초">피코초[ps]</option>
+                        <option value="나노초">펨토초[fs]</option>
+                        <option value="밀리초">아토초[as]</option>
+                        <option value="나노초">셰이크</option>
+                        <option value="밀리초">분[min]</option>
+                        <option value="나노초">시[h]</option>
+                        <option value="밀리초">일[d]</option>
+                        <option value="나노초">주</option>
+                        <option value="밀리초">달</option>
+                        <option value="나노초">년[y]</option>
+                    </select>
+                </div>
+            `;
+        const lengthHtmlContent = `
+                <div id="conversionUnitDiv-Select">
+                    <div id="conversionUnitDiv">
+                        <input type="text" id="conversionUnit">
+                    </div>
+                    <select name="conversionUnit" id="conversionUnitSelect1">
+                        <option value="미터[m]">미터[m]</option>
+                        <option value="엑사미터[Es]">엑사미터[Es]</option>
+                        <option value="페티미터[Pm]">페티미터[Pm]</option>
+                        <option value="테라미터[Tm]">테라미터[Tm]</option>
+                        <option value="기가미터[Gm]">기가미터[Gm]</option>
+                        <option value="메가미터[Mm]">메가미터[Mm]</option>
+                        <option value="킬로미터[km]">킬로미터[km]</option>
+                        <option value="헥토미터[hm]">헥토미터[hm]</option>
+                        <option value="데타미터[dam]">데타미터[dam]</option>
+                        <option value="데시미터[dm]">데시미터[dm]</option>
+                        <option value="센티미터[cm]">센티미터[cm]</option>
+                        <option value="밀리미터[mm]">밀리미터[mm]</option>
+                        <option value="나노미터[nm]">나노미터[nm]</option>
+                        <option value="센티인치[cin]">센티인치[cin]</option>
+                    </select>
+                </div>
+                <div id="conversionUnitDiv-Select">
+                    <div id="conversionUnitDiv">
+                        <input type="text" id="conversionResult1">
+                    </div>
+                    <select name="conversionUnit" id="conversionUnitSelect2">
+                        <option value="미터[m]">미터[m]</option>
+                        <option value="엑사미터[Es]">엑사미터[Es]</option>
+                        <option value="페티미터[Pm]">페티미터[Pm]</option>
+                        <option value="테라미터[Tm]">테라미터[Tm]</option>
+                        <option value="기가미터[Gm]">기가미터[Gm]</option>
+                        <option value="메가미터[Mm]">메가미터[Mm]</option>
+                        <option value="킬로미터[km]">킬로미터[km]</option>
+                        <option value="헥토미터[hm]">헥토미터[hm]</option>
+                        <option value="데타미터[dam]">데타미터[dam]</option>
+                        <option value="데시미터[dm]">데시미터[dm]</option>
+                        <option value="센티미터[cm]">센티미터[cm]</option>
+                        <option value="밀리미터[mm]">밀리미터[mm]</option>
+                        <option value="나노미터[nm]">나노미터[nm]</option>
+                        <option value="센티인치[cin]">센티인치[cin]</option>
+                    </select>
+                </div>
+            `;
+        const temperatureHtmlContent = `
+                <div id="conversionUnitDiv-Select">
+                    <div id="conversionUnitDiv">
+                        <input type="text" id="conversionUnit">
+                    </div>
+                    <select name="conversionUnit" id="conversionUnitSelect1">
+                        <option value="켈빈 온도">켈빈 온도[K]</option>
+                        <option value="섭씨 온도">섭씨 온도[°C]</option>
+                        <option value="화씨 온도">화씨 온도[°F]</option>
+                        <option value="랭킨 온도">랭킨 온도[°R]</option>
+                        <option value="뢰어 온도">뢰어 온도[°r]</option>
+                    </select>
+                </div>
+                <div id="conversionUnitDiv-Select">
+                    <div id="conversionUnitDiv">
+                        <input type="text" id="conversionResult1">
+                    </div>
+                    <select name="conversionUnit" id="conversionUnitSelect2">
+                        <option value="켈빈 온도">켈빈 온도[K]</option>
+                        <option value="섭씨 온도">섭씨 온도[°C]</option>
+                        <option value="화씨 온도">화씨 온도[°F]</option>
+                        <option value="랭킨 온도">랭킨 온도[°R]</option>
+                        <option value="뢰머 온도">뢰머 온도[°r]</option>
+                    </select>
+                </div>
+            `;
+        const hexadecimalHtmlContent = `
+                <div id="conversionUnitDiv-Select">
+                    <div id="conversionUnitDiv">
+                        <input type="text" id="conversionUnit">
+                    </div>
+                    <select name="conversionUnit" id="conversionUnitSelect1">
+                        <option value="2진수">2진수</option>
+                        <option value="8진수">8진수</option>
+                        <option value="10진수">10진수</option>
+                        <option value="16진수">16진수</option>
+                        <option value="32진수">32진수</option>
+                    </select>
+                </div>
+                <div id="conversionUnitDiv-Select">
+                    <div id="conversionUnitDiv">
+                        <input type="text" id="conversionResult1">
+                    </div>
+                    <select name="conversionUnit" id="conversionUnitSelect2">
+                        <option value="2진수">2진수</option>
+                        <option value="8진수">8진수</option>
+                        <option value="10진수">10진수</option>
+                        <option value="16진수">16진수</option>
+                        <option value="32진수">32진수</option>
+                    </select>
+                </div>
+            `;
+        const wavelengthHtmlContent = `
+                <div id="conversionUnitDiv-Select">
+                    <div id="conversionUnitDiv">
+                        <input type="text" id="conversionUnit">
+                    </div>
+                    <select name="conversionUnit" id="conversionUnitSelect1">
+                        <option value="헤르츠[Hz]">헤르츠[Hz]</option>
+                        <option value="엑사헤르츠[EHz]">엑사헤르츠[EHz]</option>
+                        <option value="페라헤르츠[PHz]">페라헤르츠[PHz]</option>
+                        <option value="테라헤르츠[THz]">테라헤르츠[THz]</option>
+                        <option value="기가헤르츠[GHz]">기가헤르츠[GHz]</option>
+                        <option value="메가헤르츠[MHz]">메가헤르츠[MHz]</option>
+                        <option value="킬로헤르츠[kHz]">킬로헤르츠[kHz]</option>
+                        <option value="헥토헤르츠[hHz]">헥토헤르츠[hHz]</option>
+                        <option value="데카헤르츠[daHz]">데카헤르츠[daHz]</option>
+                        <option value="데시헤르츠[dHz]">데시헤르츠[dHz]</option>
+                        <option value="센티헤르츠[cHz]">센티헤르츠[cHz]</option>
+                        <option value="밀리헤르츠[mHz]">밀리헤르츠[mHz]</option>
+                        <option value="나노헤르츠[nHz]">나노헤르츠[nHz]</option>
+                        <option value="사이클/초">사이클/초</option>
+                    </select>
+                </div>
+                <div id="conversionUnitDiv-Select">
+                    <div id="conversionUnitDiv">
+                        <input type="text" id="conversionResult1">
+                    </div>
+                    <select name="conversionUnit" id="conversionUnitSelect2">
+                        <option value="헤르츠[Hz]">헤르츠[Hz]</option>
+                        <option value="엑사헤르츠[EHz]">엑사헤르츠[EHz]</option>
+                        <option value="페라헤르츠[PHz]">페라헤르츠[PHz]</option>
+                        <option value="테라헤르츠[THz]">테라헤르츠[THz]</option>
+                        <option value="기가헤르츠[GHz]">기가헤르츠[GHz]</option>
+                        <option value="메가헤르츠[MHz]">메가헤르츠[MHz]</option>
+                        <option value="킬로헤르츠[kHz]">킬로헤르츠[kHz]</option>
+                        <option value="헥토헤르츠[hHz]">헥토헤르츠[hHz]</option>
+                        <option value="데카헤르츠[daHz]">데카헤르츠[daHz]</option>
+                        <option value="데시헤르츠[dHz]">데시헤르츠[dHz]</option>
+                        <option value="센티헤르츠[cHz]">센티헤르츠[cHz]</option>
+                        <option value="밀리헤르츠[mHz]">밀리헤르츠[mHz]</option>
+                        <option value="나노헤르츠[nHz]">나노헤르츠[nHz]</option>
+                        <option value="사이클/초">사이클/초</option>
+                    </select>
+                </div>
+            `;
+        const massHtmlContent = `
+                <div id="conversionUnitDiv-Select">
+                    <div id="conversionUnitDiv">
+                        <input type="text" id="conversionUnit">
+                    </div>
+                    <select name="conversionUnit" id="conversionUnitSelect1">
+                        <option value="킬로그램[kg]">킬로그램[kg]</option>
+                        <option value="그램[g]">그램[g]</option>
+                        <option value="엑사그램[Eg]">엑사그램[Eg]</option>
+                        <option value="페타그램[Pg]">페타그램[Pg]</option>
+                        <option value="테타그램[Tg]">테타그램[Tg]</option>
+                        <option value="기가그램[Gg]">기가그램[Gg]</option>
+                        <option value="메가그램[Mg]">메가그램[Mg]</option>
+                        <option value="헥토그램[hg]">헥토그램[hg]</option>
+                        <option value="데카그램[dag]">데카그램[dag]</option>
+                        <option value="데시그램[dg]">데시그램[dg]</option>
+                        <option value="센티그램[cg]">센티그램[cg]</option>
+                        <option value="밀리그램[mg]">밀리그램[mg]</option>
+                        <option value="나노그램[ng]">나노그램[ng]</option>
+                        <option value="킬로파운드[kip]">킬로파운드[kip]</option>
+                    </select>
+                </div>
+                <div id="conversionUnitDiv-Select">
+                    <div id="conversionUnitDiv">
+                        <input type="text" id="conversionResult1">
+                    </div>
+                    <select name="conversionUnit" id="conversionUnitSelect2">
+                        <option value="킬로그램[kg]">킬로그램[kg]</option>
+                        <option value="그램[g]">그램[g]</option>
+                        <option value="엑사그램[Eg]">엑사그램[Eg]</option>
+                        <option value="페타그램[Pg]">페타그램[Pg]</option>
+                        <option value="테타그램[Tg]">테타그램[Tg]</option>
+                        <option value="기가그램[Gg]">기가그램[Gg]</option>
+                        <option value="메가그램[Mg]">메가그램[Mg]</option>
+                        <option value="헥토그램[hg]">헥토그램[hg]</option>
+                        <option value="데카그램[dag]">데카그램[dag]</option>
+                        <option value="데시그램[dg]">데시그램[dg]</option>
+                        <option value="센티그램[cg]">센티그램[cg]</option>
+                        <option value="밀리그램[mg]">밀리그램[mg]</option>
+                        <option value="나노그램[ng]">나노그램[ng]</option>
+                        <option value="킬로파운드[kip]">킬로파운드[kip]</option>
+                    </select>
+                </div>
+            `;
+
+        const resultInputWindow = `<input type="text" id="conversionResult2">`;
+        const fileConversionInputAndSubmit = `
+                <input type="file" required id="file-form">
+                <button type="submit" id="submit">변환 및 다운</button>
+            `;
+
+        const formAndSubmit = document.getElementById('form-and-submit');
+        const file_form = document.getElementById('file-form');
+        const submit = document.getElementById('submit');
+        const resultInputDiv = document.getElementById('resultInputDiv');
+
+        const lengthSelect = document.getElementById('center-conversionUnitDiv');
+        select.addEventListener('change', function(event) {
+            var value = select.options[select.selectedIndex].value;
+
+            switch(value) {
+                case '이미지 파일': updateConversionTypes('이미지 변환기', '무료로 온라인 이미지를 변환하세요!', imageHtmlContent1, imageHtmlContent2, imageTypeArray, object.image); updateFileEvent(); break;
+                case '비디오 파일': updateConversionTypes('비디오 변환기', '무료로 온라인 비디오를 변환하세요!', '', videoHtmlContent, videoTypeArray, object.video); updateFileEvent(); break;
+                case '오디오 파일': updateConversionTypes('오디오 변환기', '무료로 온라인 오디오를 변환하세요!', '', audioHtmlContent, audioTypeArray, object.audio); updateFileEvent(); break;
+                case '데이터 파일': updateConversionTypes('데이터 파일 변환기', '무료로 온라인 데이터 파일를 변환하세요!', '', dataFileHtmlContent, dataFileTypeArray, object.data_file); updateFileEvent(); break;
+                case '시간 단위': updateNotFileEvent('시간 단위 변환기', '시간의 단위를 당장 변환해보세요!', timeHtmlContent); break;
+                case '길이 단위': updateNotFileEvent('길이 단위 변환기', '거리 및 시간의 단위를 당장 변환해보세요!', lengthHtmlContent); break;
+                case '온도 단위': updateNotFileEvent('온도 단위 변환기', '온도 단위를 당장 변환해보세요!', temperatureHtmlContent); break;
+                case '진수 계산': updateNotFileEvent('진수 변환기', '2진수, 8진수, 10진수, 16진수, 32진수를 상호 변환해보세요!', hexadecimalHtmlContent); break;
+                case '진동수 파장': updateNotFileEvent('진동수 파장 변환기', '진동수 파장의 단위를 당장 변환해보세요!', wavelengthHtmlContent); break;
+                case '질량 단위': updateNotFileEvent('질량 변환기', '무게 및 질량의 단위를 당장 변환해보세요!', massHtmlContent); break;
+            }
+        });
+
+        function updateNotFileEvent(contentTitle, contentDescription, html) {
+            title.innerText = contentTitle;
+            description.innerText = contentDescription;
+            lengthSelect.innerHTML = html;
+
+            resultInputDiv.innerHTML = resultInputWindow;
+            formAndSubmit.innerHTML = '';
+            targetElement1.innerHTML = '';
+            targetElement2.innerHTML = '';
+
+            joinText.textContent = '변환할 형식을 선택하세요!';
+            joinText.style.color = '#4380d5';
+
+            updateFileEvent('', '');
+        }
+
+        function updateFileEvent(first, second) {
+            const fileInput = document.querySelector('.file-form input[type=file]');
+            const fileNameDisplay = document.getElementById('file-name');
+
+            if(first === '' && second === '') {
+                fileNameDisplay.innerText = '';
+
+                const conversionSelectType1 = document.getElementById('conversionUnitSelect1');
+                const conversionSelectType2 = document.getElementById('conversionUnitSelect2');
+                const conversionResultInput = document.getElementById('conversionResult2');
+
+                /*
+                    두 가지의 경우의 수를 생각해서 이벤트 리스너를 2개 만듬
+                */
+                // 사용자가 값을 작성한 후 변환할 타입을 고르고 서버에 값을 업데이트 요청하기 위한 이벤트 리스너
+                conversionSelectType2.addEventListener('change', function(event) {
+                    console.log(`변환될 타입: ${conversionSelectType1.value}, 변환된 타입: ${conversionSelectType2.value}`);
+                    console.log(conversionResultInput.value);
+
+                    // TODO 변환될 타입과 변환할 타입을 서버에 보내는 로직 작성해라.
+                });
+
+                const conversionUnit1 = document.getElementById('conversionUnit');
+                const conversionResultInput1 = document.getElementById('conversionResult1');
+
+                // 사용자가 작성할 때마다 결과 값을 미리 보여주는 이벤트를 위한 이벤트 리스너
+                conversionUnit1.addEventListener('input', function(event) {
+                    console.log(conversionUnit1.value);
+
+                    // TODO 변환될 타입과 변환할 타입을 서버에 보내는 로직 작성해라.
+                });
+
+            } else {
+                fileInput.addEventListener('change', (event) => {
+                    const fileName = event.target.files[0]?.name || "";
+                    fileNameDisplay.textContent = fileName ? `선택된 파일: ${fileName}` : "";
+                });
+            }
+        }
+
+        function updateConversionTypes(contentTitle, contentDescription, htmlContent1, htmlContent2, typeArray, objectType) {
+            title.innerText = contentTitle;
+            description.innerText = contentDescription;
+            targetElement1.innerHTML = htmlContent1;
+            targetElement2.innerHTML = htmlContent2;
+
+            formAndSubmit.innerHTML = fileConversionInputAndSubmit;
+            lengthSelect.innerHTML = '';
+            resultInputDiv.innerHTML = '';
+
+            for(let i = 0; i < objectType.length; i++) {
+                objectType[i][0] = document.getElementById(typeArray[i]);
+                objectType[i][1] = document.getElementById(`${typeArray[i]}-span`);
+            }
+
+            conversionTypeEvent();
+        }
+
+        function conversionTypeEvent() {
+            Object.values(object).forEach(type => type.forEach(item => item[2] = 0)); // <- 모두 count를 0으로 만들어벼려~
+
+            joinText.textContent = '변환할 형식을 선택하세요!';
+            joinText.style.color = '#4380d5';
+
+            const conversionTypes = Array.from(document.querySelectorAll('div[class=type]'));
+            conversionTypes.forEach(type => {
+                type.addEventListener('click', function(event) {
+                    const value = select.options[select.selectedIndex].value;
+
+                    switch(value) {
+                        case '이미지 파일': { conversionObjectType(object.image, type); break; }
+                        case '비디오 파일': { conversionObjectType(object.video, type); break; }
+                        case '오디오 파일': { conversionObjectType(object.audio, type); break; }
+                        case '데이터 파일': { conversionObjectType(object.data_file, type); break; }
+                    }
+
+                    if (type.getAttribute('id') === types[0].getAttribute('id') && types[2] === 0) {
+                        let hasActiveType = Object.values(objectType).some(otherImageType => otherImageType[2] === 1);
+                        if (hasActiveType) {
+                            joinText.textContent = '선택을 취소해주세요!';
+                            joinText.style.color = 'red';
+                        } else {
+                            document.getElementById(`${type.getAttribute('id')}`).style.backgroundColor = '#4380d5';
+                            document.getElementById(`${type.getAttribute('id')}-span`).style.color = 'white';
+                            types[2]++;
+                        }
+                    } else {
+                        document.getElementById(`${type.getAttribute('id')}`).style.backgroundColor = '#4380d53b';
+                        document.getElementById(`${type.getAttribute('id')}-span`).style.color = 'rgb(42, 42, 42)';
+                        joinText.textContent = '변환할 형식을 선택하세요!';
+                        joinText.style.color = '#4380d5';
+                        types[2] = 0;
+                    }
+                });
+            });
+        }
+
+        let types, objectType = null;
+        function conversionObjectType(conversionObjectType, type) {
+            for(let conversionType of Object.values(conversionObjectType)) {
+                if(`${conversionType[0].getAttribute('id')}` === `${type.getAttribute('id')}`) {
+                    types = conversionType;
+                    objectType = conversionObjectType;
+                }
+            }
+        }
+
+        const fileInput = document.querySelector('.file-form input[type=file]');
+        const fileNameDisplay = document.getElementById('file-name');
+        fileInput.addEventListener('change', (event) => {
+            const fileName = event.target.files[0]?.name || "";
+            fileNameDisplay.textContent = fileName ? `선택된 파일: ${fileName}` : "";
+        });
+
+        const fileUploadForm = document.getElementById('file-upload-form');
+        const type = document.getElementsByClassName('type');
+        fileUploadForm.addEventListener('submit', function(event) {
+            event.preventDefault(); // 데이터를 커스텀해서 서버로 보낼거기 때문에 해당 이벤트를 취소함.
+            const conversionType = Array.from(type)
+                    .filter(item => getComputedStyle(item).backgroundColor === 'rgb(67, 128, 213)')
+                    .map(item => item.textContent.trim());
+
+            if(conversionType === '') { alert('변환할 형식을 선택하세요!'); return; }
+
+            // TODO 나중에 변환 형식과 파일을 서버로 보내는 로직 작성하라.
+            // location.href = `http:127.0.0.1:5500/index.html&type=${conversionType}`;
+        });
+
+        const fileForm = document.getElementById('file-form');
+        fileForm.addEventListener('change', function(event) {
+            var value = select.options[select.selectedIndex].value;
+            var file = event.target.files[0];
+
+            // 확장자
+            const extension = file.type.toString().substring(file.type.toString().length - 5);
+
+            // TODO 나중에 처리해라.
+            // switch(value) {
+            //     case '이미지 파일': {
+            //         if(extension.includes('png') || extension.includes('jpg') ||
+            //             extension.includes('jpeg') || extension.includes('gif') || extension.includes('bmp') || extension.includes('ico') ||
+            //             extension.includes('psd') || extension.includes('tiff') || extension.includes('webp') || extension.includes('pdf') ||
+            //             extension.includes('docx') || extension.includes('txt') || extension.includes('svg')
+            //         ) { return; } else {
+            //             fileInput.value = '';
+            //             fileNameDisplay.innerText = '';
+            //             alert('형식이 맞지 않습니다.');
+            //             return;
+            //         }
+            //     }
+            //     case '비디오 파일': {
+            //         if(extension.includes('mp4') || extension.includes('mov') || extension.includes('mkv') ||
+            //             extension.includes('webm') || extension.includes('flv') || extension.includes('avi')
+            //         ) { return; } else {
+            //             fileInput.value = '';
+            //             fileNameDisplay.innerText = '';
+            //             alert('형식이 맞지 않습니다.');
+            //             return;
+            //         }
+            //     }
+            //     case '오디오 파일': {
+            //         if(extension.includes('mp3') || extension.includes('wav') || extension.includes('flac') || extension.includes('aac'))
+            //         { return; } else {
+            //             fileInput.value = '';
+            //             fileNameDisplay.innerText = '';
+            //             alert('형식이 맞지 않습니다.');
+            //             return;
+            //         }
+            //     }
+            //     case '데이터 파일': {
+            //         if(extension.includes('json') || extension.includes('xml') || extension.includes('csv'))
+            //         { return; } else {
+            //             fileInput.value = '';
+            //             fileNameDisplay.innerText = '';
+            //             alert('형식이 맞지 않습니다.');
+            //             return;
+            //         }
+            //     }
+            // }
+
+            // 이건 프로모션을 적용할 시 해야할 듯? ㅋㅋㅋ 막상 만들고 나니까 업로드 제한을 걸어두면 무료가 아닌것 같은 느낌이 들어..
+            if(file.size > (1024 * 2) * 1024) { // 업로드된 파일의 크기를 보고 삭제하는 로직
+                alert('2MB까지 업로드 가능합니다.');
+                fileInput.value = '';
+                fileNameDisplay.innerText = '';
+                return;
+            }
+        });
+
+        conversionTypeEvent();
+    </script>
+</body>
+</html>
