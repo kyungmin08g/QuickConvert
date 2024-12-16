@@ -848,7 +848,7 @@
                     두 가지의 경우의 수를 생각해서 이벤트 리스너를 2개 만듬
                 */
                 // 사용자가 값을 작성한 후 변환할 타입을 고르고 서버에 값을 업데이트 요청하기 위한 이벤트 리스너
-                conversionSelectType2.addEventListener('change', function(event) {
+                conversionSelectType2.addEventListener('change', function() {
                     console.log(`변환될 타입: ${conversionSelectType1.value}, 변환된 타입: ${conversionSelectType2.value}`);
                     console.log(conversionResultInput.value);
 
@@ -859,7 +859,7 @@
                 const conversionResultInput1 = document.getElementById('conversionResult1');
 
                 // 사용자가 작성할 때마다 결과 값을 미리 보여주는 이벤트를 위한 이벤트 리스너
-                conversionUnit1.addEventListener('input', function(event) {
+                conversionUnit1.addEventListener('input', function() {
                     console.log(conversionUnit1.value);
 
                     // TODO 변환될 타입과 변환할 타입을 서버에 보내는 로직 작성해라.
@@ -940,6 +940,16 @@
             }
         }
 
+        let fileByteArray = null;
+        function uint8ArrayToBase64(uint8Array) {
+            let binary = '';
+            const len = uint8Array.byteLength;
+            for (let i = 0; i < len; i++) {
+                binary += String.fromCharCode(uint8Array[i]);
+            }
+            return btoa(binary);
+        }
+
         const fileInput = document.querySelector('.file-form input[type=file]');
         const fileNameDisplay = document.getElementById('file-name');
         fileInput.addEventListener('change', (event) => {
@@ -957,14 +967,27 @@
 
             if(conversionType === '') { alert('변환할 형식을 선택하세요!'); return; }
 
-            // TODO 나중에 변환 형식과 파일을 서버로 보내는 로직 작성하라.
-            // location.href = `http:127.0.0.1:5500/index.html&type=${conversionType}`;
+            fetch('/api/v1/conversion', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', },
+                body: JSON.stringify({
+                    fileName: fileNameDisplay.textContent.split(': ')[1],
+                    conversionType: conversionType[0],
+                    fileByteArray: uint8ArrayToBase64(fileByteArray),
+                }),
+            }).then(response => response.json()).then(data => {
+                console.log(data);
+            }).catch(error => { console.error('Error:', error); });
         });
 
         const fileForm = document.getElementById('file-form');
         fileForm.addEventListener('change', function(event) {
-            var value = select.options[select.selectedIndex].value;
-            var file = event.target.files[0];
+            let value = select.options[select.selectedIndex].value;
+            let file = event.target.files[0];
+
+            let reader = new FileReader();
+            reader.readAsArrayBuffer(file); // 성공되면 onload가 호출됨
+            reader.onload = (event) => { fileByteArray = new Uint8Array(event.target.result); };
 
             // 확장자
             const extension = file.type.toString().substring(file.type.toString().length - 5);
