@@ -1,5 +1,7 @@
 package io.github.quickconvert.service
 
+import jakarta.servlet.http.HttpServletResponse
+
 abstract class ImageConversionService {
-    abstract fun conversionPNG(fileName: String, conversionType: String)
+    abstract fun conversionFileDownload(fileName: String, response: HttpServletResponse)
 }
