@@ -1,7 +1,7 @@
 package io.github.quickconvert.types
 
 import io.github.quickconvert.dto.FileResponseObject
-import io.github.quickconvert.service.FFmpegProcess
+import io.github.quickconvert.service.Conversion
 import org.springframework.core.io.FileSystemResource
 import java.io.ByteArrayInputStream
 import java.io.File
@@ -26,9 +26,9 @@ fun ffmpegProcessStart(command: String, conversionFileName: String, fileByteArra
     }
 }
 
-enum class ConversionImageTypes(val fileType: String): FFmpegProcess {
+enum class ConversionImageTypes(val fileType: String): Conversion {
     JPG("jpg") {
-        override fun ffmpegProcess(fileName: String, fileByteArray: ByteArray): FileResponseObject {
+        override fun conversion(fileName: String, fileByteArray: ByteArray): FileResponseObject {
             val conversionFileName = "${fileName.substringBeforeLast(".").replace("+", "").replace(" ", "")}.${this.fileType}"
             val command = """
                ffmpeg -i pipe:0 $conversionFileName
@@ -37,7 +37,7 @@ enum class ConversionImageTypes(val fileType: String): FFmpegProcess {
         }
     },
     PNG("png") {
-        override fun ffmpegProcess(fileName: String, fileByteArray: ByteArray): FileResponseObject {
+        override fun conversion(fileName: String, fileByteArray: ByteArray): FileResponseObject {
             val conversionFileName = "${fileName.substringBeforeLast(".").replace("+", "").replace(" ", "")}.${this.fileType}"
             val command = """
                ffmpeg -i pipe:0 $conversionFileName
@@ -46,7 +46,7 @@ enum class ConversionImageTypes(val fileType: String): FFmpegProcess {
         }
     },
     JPEG("jpeg") {
-        override fun ffmpegProcess(fileName: String, fileByteArray: ByteArray): FileResponseObject {
+        override fun conversion(fileName: String, fileByteArray: ByteArray): FileResponseObject {
             val conversionFileName = "${fileName.substringBeforeLast(".").replace("+", "").replace(" ", "")}.${this.fileType}"
             val command = """
                ffmpeg -i pipe:0 $conversionFileName
@@ -55,7 +55,7 @@ enum class ConversionImageTypes(val fileType: String): FFmpegProcess {
         }
     },
     GIF("gif") {
-        override fun ffmpegProcess(fileName: String, fileByteArray: ByteArray): FileResponseObject {
+        override fun conversion(fileName: String, fileByteArray: ByteArray): FileResponseObject {
             val conversionFileName = "${fileName.substringBeforeLast(".").replace("+", "").replace(" ", "")}.${this.fileType}"
             val command = """
                ffmpeg -i pipe:0 $conversionFileName 
@@ -64,7 +64,7 @@ enum class ConversionImageTypes(val fileType: String): FFmpegProcess {
         }
     },
     BMP("bmp") {
-        override fun ffmpegProcess(fileName: String, fileByteArray: ByteArray): FileResponseObject {
+        override fun conversion(fileName: String, fileByteArray: ByteArray): FileResponseObject {
             val conversionFileName = "${fileName.substringBeforeLast(".").replace("+", "").replace(" ", "")}.${this.fileType}"
             val command = """
                ffmpeg -i pipe:0 $conversionFileName 
@@ -73,7 +73,7 @@ enum class ConversionImageTypes(val fileType: String): FFmpegProcess {
         }
     },
     TIFF("tiff") {
-        override fun ffmpegProcess(fileName: String, fileByteArray: ByteArray): FileResponseObject {
+        override fun conversion(fileName: String, fileByteArray: ByteArray): FileResponseObject {
             val conversionFileName = "${fileName.substringBeforeLast(".").replace("+", "").replace(" ", "")}.${this.fileType}"
             val command = """
                ffmpeg -i pipe:0 $conversionFileName 
@@ -82,7 +82,7 @@ enum class ConversionImageTypes(val fileType: String): FFmpegProcess {
         }
     },
     WEBP("webp") {
-        override fun ffmpegProcess(fileName: String, fileByteArray: ByteArray): FileResponseObject {
+        override fun conversion(fileName: String, fileByteArray: ByteArray): FileResponseObject {
             val conversionFileName = "${fileName.substringBeforeLast(".").replace("+", "").replace(" ", "")}.${this.fileType}"
             val command = """
                ffmpeg -i pipe:0 $conversionFileName 

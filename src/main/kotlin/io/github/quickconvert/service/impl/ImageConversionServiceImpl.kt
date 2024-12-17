@@ -1,23 +1,32 @@
 package io.github.quickconvert.service.impl
 
+import io.github.quickconvert.dto.FileInfo
 import io.github.quickconvert.dto.FileResponseObject
-import io.github.quickconvert.service.FFmpegProcess
 import io.github.quickconvert.service.ImageConversionService
+import io.github.quickconvert.types.ConversionImageTypes
 import jakarta.servlet.http.HttpServletResponse
-import lombok.extern.slf4j.Slf4j
-import org.slf4j.LoggerFactory
 import org.springframework.core.io.FileSystemResource
 import org.springframework.http.HttpHeaders
 import org.springframework.stereotype.Service
-import java.io.ByteArrayInputStream
 import java.io.File
 import java.net.URLDecoder
 import java.net.URLEncoder
 
 @Service
-@Slf4j
 class ImageConversionServiceImpl : ImageConversionService() {
-    private val logger = LoggerFactory.getLogger(ImageConversionServiceImpl::class.java)
+
+    override fun convertImage(fileInfo: FileInfo): FileResponseObject {
+        return when (fileInfo.conversionType) {
+            ConversionImageTypes.JPG.name -> ConversionImageTypes.JPG.conversion(fileInfo.fileName, fileInfo.fileByteArray)
+            ConversionImageTypes.PNG.name -> ConversionImageTypes.PNG.conversion(fileInfo.fileName, fileInfo.fileByteArray)
+            ConversionImageTypes.JPEG.name -> ConversionImageTypes.JPEG.conversion(fileInfo.fileName, fileInfo.fileByteArray)
+            ConversionImageTypes.GIF.name -> ConversionImageTypes.GIF.conversion(fileInfo.fileName, fileInfo.fileByteArray)
+            ConversionImageTypes.BMP.name -> ConversionImageTypes.BMP.conversion(fileInfo.fileName, fileInfo.fileByteArray)
+            ConversionImageTypes.TIFF.name -> ConversionImageTypes.TIFF.conversion(fileInfo.fileName, fileInfo.fileByteArray)
+            ConversionImageTypes.WEBP.name -> ConversionImageTypes.WEBP.conversion(fileInfo.fileName, fileInfo.fileByteArray)
+            else -> FileResponseObject("none")
+        }
+    }
 
     override fun conversionFileDownload(fileName: String, response: HttpServletResponse) {
         val decodedFile = File(URLDecoder.decode(fileName, "UTF-8"))

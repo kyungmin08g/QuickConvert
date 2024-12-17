@@ -974,13 +974,15 @@
                     fileByteArray: uint8ArrayToBase64(fileByteArray),
                 })
             }).then(response => response.json()).then(data => {
-                const link = document.createElement("a");
-                link.href = `/api/v1/fileDownload?filename=${encodeURIComponent(data.fileName)}`;
-                link.download = data.fileName;
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-                location.reload();
+                if (data.fileName !== 'none') {
+                    const link = document.createElement("a");
+                    link.href = `/api/v1/fileDownload?filename=${encodeURIComponent(data.fileName)}`;
+                    link.download = data.fileName;
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    location.reload();
+                } else alert("해당 형식으로 변환할 수 없습니다.");
             }).catch(error => { console.error('Error:', error); });
         });
 
