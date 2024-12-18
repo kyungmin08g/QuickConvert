@@ -27,6 +27,10 @@ class ImageConversionServiceImpl : ImageConversionService() {
             ConversionImageTypes.WEBP.name -> ConversionImageTypes.WEBP.conversion(fileInfo.fileName, fileInfo.fileByteArray)
             ConversionImageTypes.PDF.name -> ConversionImageTypes.PDF.conversion(fileInfo.fileName, fileInfo.fileByteArray)
             ConversionImageTypes.DOCX.name -> ConversionImageTypes.DOCX.conversion(fileInfo.fileName, fileInfo.fileByteArray)
+            ConversionImageTypes.TXT.name -> ConversionImageTypes.TXT.conversion(fileInfo.fileName, fileInfo.fileByteArray)
+            ConversionImageTypes.SVG.name -> ConversionImageTypes.SVG.conversion(fileInfo.fileName, fileInfo.fileByteArray)
+            ConversionImageTypes.ICO.name -> ConversionImageTypes.ICO.conversion(fileInfo.fileName, fileInfo.fileByteArray)
+            ConversionImageTypes.PSD.name -> ConversionImageTypes.PSD.conversion(fileInfo.fileName, fileInfo.fileByteArray)
             else -> FileResponseObject("none", null)
         }
     }

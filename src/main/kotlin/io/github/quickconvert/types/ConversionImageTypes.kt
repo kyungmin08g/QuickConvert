@@ -12,29 +12,8 @@ import org.apache.poi.common.usermodel.PictureType
 import org.apache.poi.xwpf.usermodel.XWPFDocument
 import org.springframework.core.io.FileSystemResource
 import java.io.*
-import java.nio.charset.StandardCharsets
 import java.util.*
-
-
-fun ffmpegProcessStart(command: String, conversionFileName: String, fileByteArray: ByteArray): FileResponseObject {
-    val processBuilder = ProcessBuilder(command.trim().split(" "))
-    processBuilder.redirectErrorStream(true)
-    val process = processBuilder.start()
-
-    val inputStream = ByteArrayInputStream(fileByteArray)
-    inputStream.copyTo(process.outputStream)
-    process.outputStream.close()
-
-    val fileResource = FileSystemResource(File(conversionFileName))
-
-    return if (process.waitFor() != 0) {
-        println("ffmpeg 프로세스를 실행하던 도중 문제가 발생했습니다.")
-        FileResponseObject("none", null)
-    } else {
-        println("ffmpeg 프로세스가 정상적으로 종료되었습니다.")
-        FileResponseObject(fileResource.filename, null)
-    }
-}
+import javax.imageio.ImageIO
 
 enum class ConversionImageTypes(val fileType: String): Conversion {
     JPG("jpg") {
@@ -110,7 +89,6 @@ enum class ConversionImageTypes(val fileType: String): Conversion {
                 }
             }
 
-            // com.itextpdf:itext7-core:7.2.5 라이브러리 사용
             val writer = PdfWriter("./${fileName.substringBeforeLast(".")}.pdf")
             val pdfDocument = PdfDocument(writer)
 
@@ -129,7 +107,7 @@ enum class ConversionImageTypes(val fileType: String): Conversion {
             file.delete()
 
             val pdfFile = File("${fileName.substringBeforeLast(".")}.pdf")
-            val outputStream = ByteArrayOutputStream() // 바이트 배열을 전달하기 위해서 (실제로는 인코딩해서 전달하고 blob으로 만든 다음 다운로드함)
+            val outputStream = ByteArrayOutputStream()
             pdfFile.inputStream().use { input ->
                 val buf = ByteArray(2048)
                 var bytesRead: Int
@@ -137,6 +115,7 @@ enum class ConversionImageTypes(val fileType: String): Conversion {
                     outputStream.write(buf, 0, bytesRead)
                 }
             }
+            pdfFile.delete()
 
             return FileResponseObject(pdfFile.name, Base64.getEncoder().encodeToString(outputStream.toByteArray()))
         }
@@ -146,15 +125,17 @@ enum class ConversionImageTypes(val fileType: String): Conversion {
             val pictureType = when (fileName.substringAfterLast(".")) {
                 "png" -> PictureType.PNG
                 "jpeg", "jpg" -> PictureType.JPEG
-                else -> throw IOException("지원하지 않는 포맷입니다.")
+                else -> return FileResponseObject("none", null)
             }
-            val imageFile = File("./$fileName").apply { this.writeBytes(fileByteArray) }
 
+            val imageFile = File("./$fileName").apply { this.writeBytes(fileByteArray) }
             val docxFile = File("./${fileName.substringBeforeLast(".")}.docx").apply {
-                FileOutputStream(this).use { fos ->
+                FileOutputStream(this).use {
                     XWPFDocument().apply {
-                        this.createParagraph().createRun().addPicture(FileInputStream(imageFile), pictureType, fileName, 600, 800)
-                        this.write(fos)
+                        this.createParagraph().createRun().addPicture(
+                            FileInputStream(imageFile), pictureType, fileName, 600, 800
+                        )
+                        this.write(it)
                     }
                 }
             }
@@ -168,8 +149,136 @@ enum class ConversionImageTypes(val fileType: String): Conversion {
             return FileResponseObject(docxFile.name, base64Content)
         }
     },
-//    TXT("txt"),
-//    SVG("svg"),
-//    ICO("ico"),
-//    PSD("psd")
+    TXT("txt") {
+        override fun conversion(fileName: String, fileByteArray: ByteArray): FileResponseObject {
+            val imgFile = File("./$fileName").apply {
+                this.createNewFile()
+                FileOutputStream(this).apply { this.write(fileByteArray) }
+            }
+
+            val bufferedImage = ImageIO.read(imgFile)
+            val width = bufferedImage.width
+            val height = bufferedImage.height
+
+            val txtFile = File("${fileName.substringBeforeLast(".")}.txt").apply {
+                this.createNewFile()
+                FileWriter(this.path).use { writer ->
+                    for (y in 0..< height) {
+                        for (x in 0..< width) {
+                            val pixel = bufferedImage.getRGB(x, y)
+                            writer.write(pixel)
+                        }
+                        writer.write("\n")
+                    }
+                }
+            }
+
+            val txtFileOutputStream = ByteArrayOutputStream()
+            txtFile.inputStream().use { input ->
+                val buf = ByteArray(2048)
+                var bytesRead: Int
+                while (input.read(buf).also { bytesRead = it } != -1) {
+                    txtFileOutputStream.write(buf, 0, bytesRead)
+                }
+            }
+            imgFile.delete()
+            txtFile.delete()
+
+            return FileResponseObject(txtFile.name, Base64.getEncoder().encodeToString(txtFileOutputStream.toByteArray()))
+        }
+    },
+    SVG("svg") {
+        override fun conversion(fileName: String, fileByteArray: ByteArray): FileResponseObject {
+            val file = File(fileName)
+            val fileResource = FileSystemResource(file.apply {
+                this.createNewFile()
+                FileOutputStream(this).apply { this.write(fileByteArray) }
+            })
+            val svgFileName = "${fileName.substringBeforeLast(".")}.${this.fileType}"
+
+            val processBuilder = ProcessBuilder(
+                "inkscape",
+                fileResource.file.absolutePath,
+                "--export-type=svg",
+                "--export-filename=$svgFileName"
+            )
+            processBuilder.redirectErrorStream(true)
+            val process = processBuilder.start()
+
+            if (process.waitFor() != 0) {
+                println("오류 발생")
+                file.delete()
+                return FileResponseObject("none", null)
+            }
+
+            val svgFile = File(svgFileName)
+            if (!svgFile.exists()) {
+                println("변환된 SVG 파일을 찾을 수 없습니다.")
+                file.delete()
+                return FileResponseObject("none", null)
+            }
+
+            val svgFileBytes = svgFile.readBytes()
+            file.delete()
+            svgFile.delete()
+
+            return FileResponseObject(svgFile.name, Base64.getEncoder().encodeToString(svgFileBytes))
+        }
+    },
+    ICO("ico") {
+        override fun conversion(fileName: String, fileByteArray: ByteArray): FileResponseObject {
+            val conversionFileName = "${fileName.substringBeforeLast(".").replace("+", "").replace(" ", "")}.${this.fileType}"
+            val command = """
+               ffmpeg -i pipe:0 -vf scale=256:256 $conversionFileName
+            """
+            return ffmpegProcessStart(command, conversionFileName, fileByteArray)
+        }
+    },
+    PSD("psd") {
+        override fun conversion(fileName: String, fileByteArray: ByteArray): FileResponseObject {
+            val inputFile = File(fileName).apply {
+                this.createNewFile()
+                FileOutputStream(this).apply { this.write(fileByteArray) }
+            }
+            val outputFileName = "${fileName.substringBeforeLast(".")}.psd"
+
+            val processBuilder = ProcessBuilder("convert", inputFile.absolutePath, outputFileName)
+            processBuilder.redirectErrorStream(true)
+            val process = processBuilder.start()
+
+            return if (process.waitFor() != 0) {
+                println("ImageMagick 프로세스를 실행하던 도중 문제가 발생했습니다.")
+                inputFile.delete()
+                FileResponseObject("none", null)
+            } else {
+                println("ImageMagick 프로세스가 정상적으로 종료되었습니다.")
+                val psdFile = File(outputFileName)
+                val psdBytes = psdFile.readBytes()
+                inputFile.delete()
+                psdFile.delete()
+
+                FileResponseObject(outputFileName, Base64.getEncoder().encodeToString(psdBytes))
+            }
+        }
+    }
+}
+
+fun ffmpegProcessStart(command: String, conversionFileName: String, fileByteArray: ByteArray): FileResponseObject {
+    val processBuilder = ProcessBuilder(command.trim().split(" "))
+    processBuilder.redirectErrorStream(true)
+    val process = processBuilder.start()
+
+    val inputStream = ByteArrayInputStream(fileByteArray)
+    inputStream.copyTo(process.outputStream)
+    process.outputStream.close()
+
+    val fileResource = FileSystemResource(File(conversionFileName))
+
+    return if (process.waitFor() != 0) {
+        println("ffmpeg 프로세스를 실행하던 도중 문제가 발생했습니다.")
+        FileResponseObject("none", null)
+    } else {
+        println("ffmpeg 프로세스가 정상적으로 종료되었습니다.")
+        FileResponseObject(fileResource.filename, null)
+    }
 }

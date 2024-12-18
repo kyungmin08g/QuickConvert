@@ -9,9 +9,7 @@ import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/api/v1")
-class APIController(
-    private val imageService: ImageConversionServiceImpl
-) {
+class APIController(private val imageService: ImageConversionServiceImpl) {
 
     @PostMapping("/conversion")
     fun imageConversion(@RequestBody fileInfo: FileInfo): ResponseEntity<FileResponseObject> {
