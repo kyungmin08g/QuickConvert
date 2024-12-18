@@ -7,6 +7,7 @@ import io.github.quickconvert.types.ConversionImageTypes
 import jakarta.servlet.http.HttpServletResponse
 import org.springframework.core.io.FileSystemResource
 import org.springframework.http.HttpHeaders
+import org.springframework.http.MediaType
 import org.springframework.stereotype.Service
 import java.io.File
 import java.net.URLDecoder
@@ -24,7 +25,9 @@ class ImageConversionServiceImpl : ImageConversionService() {
             ConversionImageTypes.BMP.name -> ConversionImageTypes.BMP.conversion(fileInfo.fileName, fileInfo.fileByteArray)
             ConversionImageTypes.TIFF.name -> ConversionImageTypes.TIFF.conversion(fileInfo.fileName, fileInfo.fileByteArray)
             ConversionImageTypes.WEBP.name -> ConversionImageTypes.WEBP.conversion(fileInfo.fileName, fileInfo.fileByteArray)
-            else -> FileResponseObject("none")
+            ConversionImageTypes.PDF.name -> ConversionImageTypes.PDF.conversion(fileInfo.fileName, fileInfo.fileByteArray)
+            ConversionImageTypes.DOCX.name -> ConversionImageTypes.DOCX.conversion(fileInfo.fileName, fileInfo.fileByteArray)
+            else -> FileResponseObject("none", null)
         }
     }
 
@@ -34,9 +37,15 @@ class ImageConversionServiceImpl : ImageConversionService() {
         val fileResource = FileSystemResource(fileName)
 
         response.apply {
-            this.addHeader(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"$encodedFileName\"")
-            this.addHeader(HttpHeaders.CONTENT_TYPE, "application/octet-stream")
-            this.setContentLength(decodedFile.length().toInt())
+            if (fileName.substringAfterLast(".") == "pdf") {
+                this.addHeader(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"$encodedFileName\"")
+                this.addHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_PDF_VALUE)
+                this.setContentLength(decodedFile.length().toInt())
+            } else {
+                this.addHeader(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"$encodedFileName\"")
+                this.addHeader(HttpHeaders.CONTENT_TYPE, "application/octet-stream")
+                this.setContentLength(decodedFile.length().toInt())
+            }
         }
 
         fileResource.inputStream.use { inputStream -> inputStream.copyTo(response.outputStream) }

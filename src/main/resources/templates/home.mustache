@@ -967,23 +967,38 @@
             if (conversionType === '') {alert('변환할 형식을 선택하세요!'); return; }
 
             fetch('/api/v1/conversion', {
-                method: 'POST', headers: { 'Content-Type': 'application/json' },
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     fileName: fileNameDisplay.textContent.split(': ')[1],
                     conversionType: conversionType[0],
                     fileByteArray: uint8ArrayToBase64(fileByteArray),
                 })
             }).then(response => response.json()).then(data => {
-                if (data.fileName !== 'none') {
-                    const link = document.createElement("a");
-                    link.href = `/api/v1/fileDownload?filename=${encodeURIComponent(data.fileName)}`;
+                console.log('API Response:', data);
+                if (data.fileByteArray !== null) {
+                    const byteArray = Uint8Array.from(atob(data.fileByteArray), c => c.charCodeAt(0));
+                    const blob = new Blob([byteArray], { type: 'application/octet-stream' });
+                    const link = document.createElement('a');
+                    link.href = URL.createObjectURL(blob);
                     link.download = data.fileName;
                     document.body.appendChild(link);
                     link.click();
                     document.body.removeChild(link);
                     location.reload();
+                } else if (data.fileName !== 'none') {
+                    const link = document.createElement("a");
+                    link.href = `/api/v1/fileDownload?filename=${encodeURIComponent(data.fileName)}`;
+                    link.download = data.fileName;
+                    console.log('Download URL:', link.href);
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    location.reload();
                 } else alert("해당 형식으로 변환할 수 없습니다.");
-            }).catch(error => { console.error('Error:', error); });
+            }).catch(error => {
+                console.error('Error:', error);
+            });
         });
 
         const fileForm = document.getElementById('file-form');

@@ -35,6 +35,10 @@ dependencies {
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+
+    implementation("com.itextpdf:itext7-core:7.2.5")
+    implementation("org.apache.poi:poi-ooxml:5.2.3")
+    implementation("commons-io:commons-io:2.18.0")
 }
 
 kotlin {
