@@ -3,7 +3,7 @@ package io.github.quickconvert.service.impl
 import io.github.quickconvert.dto.FileInfo
 import io.github.quickconvert.dto.FileResponseObject
 import io.github.quickconvert.service.ImageConversionService
-import io.github.quickconvert.types.ConversionImageTypes
+import io.github.quickconvert.types.ImageTypes
 import jakarta.servlet.http.HttpServletResponse
 import org.springframework.core.io.FileSystemResource
 import org.springframework.http.HttpHeaders
@@ -17,19 +17,19 @@ import java.net.URLEncoder
 class ImageConversionServiceImpl : ImageConversionService() {
     override fun convertImage(fileInfo: FileInfo): FileResponseObject {
         return when (fileInfo.conversionType) {
-            ConversionImageTypes.JPG.name -> ConversionImageTypes.JPG.conversion(fileInfo.fileName, fileInfo.fileByteArray)
-            ConversionImageTypes.PNG.name -> ConversionImageTypes.PNG.conversion(fileInfo.fileName, fileInfo.fileByteArray)
-            ConversionImageTypes.JPEG.name -> ConversionImageTypes.JPEG.conversion(fileInfo.fileName, fileInfo.fileByteArray)
-            ConversionImageTypes.GIF.name -> ConversionImageTypes.GIF.conversion(fileInfo.fileName, fileInfo.fileByteArray)
-            ConversionImageTypes.BMP.name -> ConversionImageTypes.BMP.conversion(fileInfo.fileName, fileInfo.fileByteArray)
-            ConversionImageTypes.TIFF.name -> ConversionImageTypes.TIFF.conversion(fileInfo.fileName, fileInfo.fileByteArray)
-            ConversionImageTypes.WEBP.name -> ConversionImageTypes.WEBP.conversion(fileInfo.fileName, fileInfo.fileByteArray)
-            ConversionImageTypes.PDF.name -> ConversionImageTypes.PDF.conversion(fileInfo.fileName, fileInfo.fileByteArray)
-            ConversionImageTypes.DOCX.name -> ConversionImageTypes.DOCX.conversion(fileInfo.fileName, fileInfo.fileByteArray)
-            ConversionImageTypes.TXT.name -> ConversionImageTypes.TXT.conversion(fileInfo.fileName, fileInfo.fileByteArray)
-            ConversionImageTypes.SVG.name -> ConversionImageTypes.SVG.conversion(fileInfo.fileName, fileInfo.fileByteArray)
-            ConversionImageTypes.ICO.name -> ConversionImageTypes.ICO.conversion(fileInfo.fileName, fileInfo.fileByteArray)
-            ConversionImageTypes.PSD.name -> ConversionImageTypes.PSD.conversion(fileInfo.fileName, fileInfo.fileByteArray)
+            ImageTypes.Conversion.JPG.name -> ImageTypes.Conversion.JPG.conversion(fileInfo.fileName, fileInfo.fileByteArray)
+            ImageTypes.Conversion.PNG.name -> ImageTypes.Conversion.PNG.conversion(fileInfo.fileName, fileInfo.fileByteArray)
+            ImageTypes.Conversion.JPEG.name -> ImageTypes.Conversion.JPEG.conversion(fileInfo.fileName, fileInfo.fileByteArray)
+            ImageTypes.Conversion.GIF.name -> ImageTypes.Conversion.GIF.conversion(fileInfo.fileName, fileInfo.fileByteArray)
+            ImageTypes.Conversion.BMP.name -> ImageTypes.Conversion.BMP.conversion(fileInfo.fileName, fileInfo.fileByteArray)
+            ImageTypes.Conversion.TIFF.name -> ImageTypes.Conversion.TIFF.conversion(fileInfo.fileName, fileInfo.fileByteArray)
+            ImageTypes.Conversion.WEBP.name -> ImageTypes.Conversion.WEBP.conversion(fileInfo.fileName, fileInfo.fileByteArray)
+            ImageTypes.Conversion.PDF.name -> ImageTypes.Conversion.PDF.conversion(fileInfo.fileName, fileInfo.fileByteArray)
+            ImageTypes.Conversion.DOCX.name -> ImageTypes.Conversion.DOCX.conversion(fileInfo.fileName, fileInfo.fileByteArray)
+            ImageTypes.Conversion.TXT.name -> ImageTypes.Conversion.TXT.conversion(fileInfo.fileName, fileInfo.fileByteArray)
+            ImageTypes.Conversion.SVG.name -> ImageTypes.Conversion.SVG.conversion(fileInfo.fileName, fileInfo.fileByteArray)
+            ImageTypes.Conversion.ICO.name -> ImageTypes.Conversion.ICO.conversion(fileInfo.fileName, fileInfo.fileByteArray)
+            ImageTypes.Conversion.PSD.name -> ImageTypes.Conversion.PSD.conversion(fileInfo.fileName, fileInfo.fileByteArray)
             else -> FileResponseObject("none", null)
         }
     }
