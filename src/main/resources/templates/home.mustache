@@ -420,7 +420,8 @@
                 [ document.getElementById('mkv'), document.getElementById('mkv-span'), 0 ],
                 [ document.getElementById('webm'), document.getElementById('webm-span'), 0 ],
                 [ document.getElementById('flv'), document.getElementById('flv-span'), 0 ],
-                [ document.getElementById('avi'), document.getElementById('avi-span'), 0 ]
+                [ document.getElementById('avi'), document.getElementById('avi-span'), 0 ],
+                [ document.getElementById('gif'), document.getElementById('gif-span'), 0 ]
             ],
             audio: [
                 [ document.getElementById('mp3'), document.getElementById('mp3-span'), 0 ],
@@ -443,7 +444,7 @@
         const targetElement2 = document.getElementById('convert-options-id2');
 
         const imageTypeArray = ['pdf', 'jpg', 'png', 'docx', 'txt', 'svg', 'jpeg', 'gif', 'bmp', 'ico', 'psd', 'tiff', 'webP'];
-        const videoTypeArray = ['mp4', 'mov', 'mkv', 'webm', 'flv', 'avi'];
+        const videoTypeArray = ['mp4', 'mov', 'mkv', 'webm', 'flv', 'avi', 'gif'];
         const audioTypeArray = ['mp3', 'wav', 'flac', 'aac'];
         const dataFileTypeArray = ['json', 'xml', 'csv'];
 
@@ -527,6 +528,10 @@
                 <label>
                     <input type="radio" name="convert-type" value="avi">
                     <div id="avi" class="type"><span id="avi-span">AVI</span></div>
+                </label>
+                <label>
+                    <input type="radio" name="convert-type" value="gif">
+                    <div id="gif" class="type"><span id="gif-span">GIF</span></div>
                 </label>
             `;
         const audioHtmlContent = `
@@ -792,7 +797,7 @@
         const fileConversionInputAndSubmit = `
                 <input type="file" required id="file-form">
                 <button type="submit" id="submit">변환 및 다운</button>
-            `;
+        `;
 
         const formAndSubmit = document.getElementById('form-and-submit');
         const file_form = document.getElementById('file-form');
@@ -958,27 +963,31 @@
 
         const fileUploadForm = document.getElementById('file-upload-form');
         const type = document.getElementsByClassName('type');
-        fileUploadForm.addEventListener('submit', event => {
+        fileUploadForm.addEventListener('submit', async (event) => {
             event.preventDefault(); // 데이터를 커스텀해서 서버로 보낼거기 때문에 해당 이벤트를 취소함.
+            const value = select.options[select.selectedIndex].value;
             const conversionType = Array.from(type)
                     .filter(item => getComputedStyle(item).backgroundColor === 'rgb(67, 128, 213)')
                     .map(item => item.textContent.trim());
 
-            if (conversionType === '') {alert('변환할 형식을 선택하세요!'); return; }
+            if (conversionType === '') {
+                alert('변환할 형식을 선택하세요!');
+                return;
+            }
 
-            fetch('/api/v1/conversion', {
+            await fetch('/api/v1/conversion', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
+                    selectValue: value,
                     fileName: fileNameDisplay.textContent.split(': ')[1],
                     conversionType: conversionType[0],
-                    fileByteArray: uint8ArrayToBase64(fileByteArray),
+                    fileByteArray: uint8ArrayToBase64(fileByteArray)
                 })
             }).then(response => response.json()).then(data => {
-                console.log('API Response:', data);
                 if (data.fileByteArray !== null) {
                     const byteArray = Uint8Array.from(atob(data.fileByteArray), c => c.charCodeAt(0));
-                    const blob = new Blob([byteArray], { type: 'application/octet-stream' });
+                    const blob = new Blob([byteArray], {type: 'application/octet-stream'});
                     const link = document.createElement('a');
                     link.href = URL.createObjectURL(blob);
                     link.download = data.fileName;
@@ -988,7 +997,7 @@
                     location.reload();
                 } else if (data.fileName !== 'none') {
                     const link = document.createElement("a");
-                    link.href = `/api/v1/fileDownload?filename=${encodeURIComponent(data.fileName)}`;
+                    link.href = `/api/v1/fileDownload?filename=${encodeURIComponent(data.fileName)}`
                     link.download = data.fileName;
                     console.log('Download URL:', link.href);
                     document.body.appendChild(link);
@@ -996,18 +1005,31 @@
                     document.body.removeChild(link);
                     location.reload();
                 } else alert("해당 형식으로 변환할 수 없습니다.");
-            }).catch(error => {
-                console.error('Error:', error);
+            }).catch(error => { console.error('Fetch Error:', error); });
+        });
+
+        // 카테고리가 변경될 경우
+        fileUploadForm.addEventListener('change', function() {
+            fileForm = document.getElementById('file-form');
+            fileForm.addEventListener('change', function(event) {
+                let file = event.target.files[0];
+                let reader = new FileReader();
+
+                reader.readAsArrayBuffer(file);
+                reader.onload = (event) => { fileByteArray = new Uint8Array(event.target.result); };
             });
         });
 
-        const fileForm = document.getElementById('file-form');
+        // 처음용
+        let fileForm = document.getElementById('file-form');
         fileForm.addEventListener('change', function(event) {
+            console.log(`확인용: ${event.target}`);
             let value = select.options[select.selectedIndex].value;
             let file = event.target.files[0];
 
             let reader = new FileReader();
             reader.readAsArrayBuffer(file); // 성공되면 onload가 호출됨
+            console.log(reader);
             reader.onload = (event) => { fileByteArray = new Uint8Array(event.target.result); };
 
             // 확장자
@@ -1058,12 +1080,11 @@
             // }
 
             // 이건 프로모션을 적용할 시 해야할 듯? ㅋㅋㅋ 막상 만들고 나니까 업로드 제한을 걸어두면 무료가 아닌것 같은 느낌이 들어..
-            // if(file.size > (1024 * 2) * 1024) { // 업로드된 파일의 크기를 보고 삭제하는 로직
-            //     alert('2MB까지 업로드 가능합니다.');
-            //     fileInput.value = '';
-            //     fileNameDisplay.innerText = '';
-            //     return;
-            // }
+            if(file.size > (1024 * 5) * 1024) { // 업로드된 파일의 크기를 보고 삭제하는 로직
+                alert('5MB까지 업로드 가능합니다.');
+                fileInput.value = '';
+                fileNameDisplay.innerText = '';
+            }
         });
 
         conversionTypeEvent();

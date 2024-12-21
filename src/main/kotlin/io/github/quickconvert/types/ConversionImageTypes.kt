@@ -269,8 +269,8 @@ fun ffmpegProcessStart(command: String, conversionFileName: String, fileByteArra
     val process = processBuilder.start()
 
     val inputStream = ByteArrayInputStream(fileByteArray)
-    inputStream.copyTo(process.outputStream)
     process.outputStream.close()
+    inputStream.copyTo(process.outputStream)
 
     val fileResource = FileSystemResource(File(conversionFileName))
 
