@@ -25,10 +25,10 @@ class APIController(
         return ResponseEntity.ok().body(fileResponseObjectDto)
     }
 
-//    @GetMapping("/fileDownload")
-//    fun imageConversion(
-//        @RequestParam("filename") fileName: String,
-//        response: HttpServletResponse
-//    ) = imageService.conversionFileDownload(fileName, response)
+    @GetMapping("/fileDownload")
+    fun imageConversion(
+        @RequestParam("filename") fileName: String,
+        response: HttpServletResponse
+    ) = imageService.conversionFileDownload(fileName, response)
 
 }
