@@ -17,7 +17,7 @@ object AudioTypes : FFmpegProcess {
             override fun conversion(fileName: String, fileByteArray: ByteArray): FileResponseObject {
                 val conversionFileName = "${fileName.substringBeforeLast(".")}.${this.fileType}"
                 val command = """
-                   ffmpeg -i pipe:0 $conversionFileName
+                   ffmpeg -i pipe:0 -b:a 320k $conversionFileName
                 """
                 return ffmpegProcess(command, fileName, conversionFileName, fileByteArray)
             }
@@ -26,7 +26,7 @@ object AudioTypes : FFmpegProcess {
             override fun conversion(fileName: String, fileByteArray: ByteArray): FileResponseObject {
                 val conversionFileName = "${fileName.substringBeforeLast(".")}.${this.fileType}"
                 val command = """
-                   ffmpeg -i pipe:0 $conversionFileName
+                   ffmpeg -i pipe:0 -c:a pcm_s16le $conversionFileName
                 """
                 return ffmpegProcess(command, fileName, conversionFileName, fileByteArray)
             }
@@ -35,7 +35,7 @@ object AudioTypes : FFmpegProcess {
             override fun conversion(fileName: String, fileByteArray: ByteArray): FileResponseObject {
                 val conversionFileName = "${fileName.substringBeforeLast(".")}.${this.fileType}"
                 val command = """
-                   ffmpeg -i pipe:0 $conversionFileName
+                   ffmpeg -i pipe:0 -c:a flac -compression_level 12 $conversionFileName
                 """
                 return ffmpegProcess(command, fileName, conversionFileName, fileByteArray)
             }
@@ -44,7 +44,7 @@ object AudioTypes : FFmpegProcess {
             override fun conversion(fileName: String, fileByteArray: ByteArray): FileResponseObject {
                 val conversionFileName = "${fileName.substringBeforeLast(".")}.${this.fileType}"
                 val command = """
-                   ffmpeg -i pipe:0 $conversionFileName
+                   ffmpeg -i pipe:0 -c:a aac -b:a 320k $conversionFileName
                 """
                 return ffmpegProcess(command, fileName, conversionFileName, fileByteArray)
             }
@@ -59,6 +59,8 @@ object AudioTypes : FFmpegProcess {
         val inputStream = ByteArrayInputStream(fileByteArray)
         inputStream.copyTo(process.outputStream)
         process.outputStream.close()
+
+        Thread.sleep(2000)
 
         val conversionFile = File(conversionFileName)
         val fileBytes = conversionFile.readBytes()

@@ -1017,70 +1017,73 @@
 
                 reader.readAsArrayBuffer(file);
                 reader.onload = (event) => { fileByteArray = new Uint8Array(event.target.result); };
+
+                if(file.size > (1024 * 5) * 1024) {
+                    alert('5MB까지 업로드 가능합니다.');
+                    fileInput.value = '';
+                    fileNameDisplay.innerText = '';
+                }
             });
         });
 
         // 처음용
         let fileForm = document.getElementById('file-form');
         fileForm.addEventListener('change', function(event) {
-            console.log(`확인용: ${event.target}`);
             let value = select.options[select.selectedIndex].value;
             let file = event.target.files[0];
 
             let reader = new FileReader();
             reader.readAsArrayBuffer(file); // 성공되면 onload가 호출됨
-            console.log(reader);
             reader.onload = (event) => { fileByteArray = new Uint8Array(event.target.result); };
 
             // 확장자
             const extension = file.type.toString().substring(file.type.toString().length - 5);
-
-            // TODO 나중에 처리해라.
-            // switch(value) {
-            //     case '이미지 파일': {
-            //         if(extension.includes('png') || extension.includes('jpg') ||
-            //             extension.includes('jpeg') || extension.includes('gif') || extension.includes('bmp') || extension.includes('ico') ||
-            //             extension.includes('psd') || extension.includes('tiff') || extension.includes('webp') || extension.includes('pdf') ||
-            //             extension.includes('docx') || extension.includes('txt') || extension.includes('svg')
-            //         ) { return; } else {
-            //             fileInput.value = '';
-            //             fileNameDisplay.innerText = '';
-            //             alert('형식이 맞지 않습니다.');
-            //             return;
-            //         }
-            //     }
-            //     case '비디오 파일': {
-            //         if(extension.includes('mp4') || extension.includes('mov') || extension.includes('mkv') ||
-            //             extension.includes('webm') || extension.includes('flv') || extension.includes('avi')
-            //         ) { return; } else {
-            //             fileInput.value = '';
-            //             fileNameDisplay.innerText = '';
-            //             alert('형식이 맞지 않습니다.');
-            //             return;
-            //         }
-            //     }
-            //     case '오디오 파일': {
-            //         if(extension.includes('mp3') || extension.includes('wav') || extension.includes('flac') || extension.includes('aac'))
-            //         { return; } else {
-            //             fileInput.value = '';
-            //             fileNameDisplay.innerText = '';
-            //             alert('형식이 맞지 않습니다.');
-            //             return;
-            //         }
-            //     }
-            //     case '데이터 파일': {
-            //         if(extension.includes('json') || extension.includes('xml') || extension.includes('csv'))
-            //         { return; } else {
-            //             fileInput.value = '';
-            //             fileNameDisplay.innerText = '';
-            //             alert('형식이 맞지 않습니다.');
-            //             return;
-            //         }
-            //     }
-            // }
+            console.log(extension);
+            switch(value) {
+                case '이미지 파일': {
+                    if(extension.includes('png') || extension.includes('jpg') ||
+                        extension.includes('jpeg') || extension.includes('gif') || extension.includes('bmp') || extension.includes('ico') ||
+                        extension.includes('psd') || extension.includes('tiff') || extension.includes('webp') || extension.includes('pdf') ||
+                        extension.includes('docx') || extension.includes('txt') || extension.includes('svg')
+                    ) { return; } else {
+                        fileInput.value = '';
+                        fileNameDisplay.innerText = '';
+                        alert('형식이 맞지 않습니다.');
+                        return;
+                    }
+                }
+                case '비디오 파일': {
+                    if(extension.includes('mp4') || extension.includes('mov') || extension.includes('mkv') ||
+                        extension.includes('webm') || extension.includes('flv') || extension.includes('avi') || extension.includes("gif")
+                    ) { return; } else {
+                        fileInput.value = '';
+                        fileNameDisplay.innerText = '';
+                        alert('형식이 맞지 않습니다.');
+                        return;
+                    }
+                }
+                case '오디오 파일': {
+                    if(extension.includes('mp3') || extension.includes('wav') || extension.includes('flac') || extension.includes('aac'))
+                    { return; } else {
+                        fileInput.value = '';
+                        fileNameDisplay.innerText = '';
+                        alert('형식이 맞지 않습니다.');
+                        return;
+                    }
+                }
+                case '데이터 파일': {
+                    if(extension.includes('json') || extension.includes('xml') || extension.includes('csv'))
+                    { return; } else {
+                        fileInput.value = '';
+                        fileNameDisplay.innerText = '';
+                        alert('형식이 맞지 않습니다.');
+                        return;
+                    }
+                }
+            }
 
             // 이건 프로모션을 적용할 시 해야할 듯? ㅋㅋㅋ 막상 만들고 나니까 업로드 제한을 걸어두면 무료가 아닌것 같은 느낌이 들어..
-            if(file.size > (1024 * 5) * 1024) { // 업로드된 파일의 크기를 보고 삭제하는 로직
+            if(file.size > (1024 * 5) * 1024) { // 업로드된 파일의 크기를 보고 삭제하는 코드
                 alert('5MB까지 업로드 가능합니다.');
                 fileInput.value = '';
                 fileNameDisplay.innerText = '';

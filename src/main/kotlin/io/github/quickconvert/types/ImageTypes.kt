@@ -24,7 +24,7 @@ object ImageTypes : FFmpegProcess {
             override fun conversion(fileName: String, fileByteArray: ByteArray): FileResponseObject {
                 val conversionFileName = "${fileName.substringBeforeLast(".").replace("+", "").replace(" ", "")}.${this.fileType}"
                 val command = """
-                   ffmpeg -i pipe:0 $conversionFileName
+                   ffmpeg -i pipe:0 -q:v 1 $conversionFileName
                 """
                 return ffmpegProcess(command, fileName, conversionFileName, fileByteArray)
             }
@@ -33,7 +33,7 @@ object ImageTypes : FFmpegProcess {
             override fun conversion(fileName: String, fileByteArray: ByteArray): FileResponseObject {
                 val conversionFileName = "${fileName.substringBeforeLast(".").replace("+", "").replace(" ", "")}.${this.fileType}"
                 val command = """
-                    ffmpeg -i pipe:0 $conversionFileName
+                    ffmpeg -i pipe:0 -q:v 1 $conversionFileName
                 """
                 return ffmpegProcess(command, fileName, conversionFileName, fileByteArray)
             }
@@ -42,7 +42,7 @@ object ImageTypes : FFmpegProcess {
             override fun conversion(fileName: String, fileByteArray: ByteArray): FileResponseObject {
                 val conversionFileName = "${fileName.substringBeforeLast(".").replace("+", "").replace(" ", "")}.${this.fileType}"
                 val command = """
-                   ffmpeg -i pipe:0 $conversionFileName
+                   ffmpeg -i pipe:0 -q:v 1 $conversionFileName
                 """
                 return ffmpegProcess(command, fileName, conversionFileName, fileByteArray)
             }
@@ -51,7 +51,7 @@ object ImageTypes : FFmpegProcess {
             override fun conversion(fileName: String, fileByteArray: ByteArray): FileResponseObject {
                 val conversionFileName = "${fileName.substringBeforeLast(".").replace("+", "").replace(" ", "")}.${this.fileType}"
                 val command = """
-                   ffmpeg -i pipe:0 $conversionFileName 
+                   ffmpeg -i pipe:0 -c:v libx264 -crf 18 $conversionFileName 
                 """
                 return ffmpegProcess(command, fileName, conversionFileName, fileByteArray)
             }
@@ -60,7 +60,7 @@ object ImageTypes : FFmpegProcess {
             override fun conversion(fileName: String, fileByteArray: ByteArray): FileResponseObject {
                 val conversionFileName = "${fileName.substringBeforeLast(".").replace("+", "").replace(" ", "")}.${this.fileType}"
                 val command = """
-                   ffmpeg -i pipe:0 $conversionFileName 
+                   ffmpeg -i pipe:0 -q:v 1 $conversionFileName 
                 """
                 return ffmpegProcess(command, fileName, conversionFileName, fileByteArray)
             }
@@ -69,7 +69,7 @@ object ImageTypes : FFmpegProcess {
             override fun conversion(fileName: String, fileByteArray: ByteArray): FileResponseObject {
                 val conversionFileName = "${fileName.substringBeforeLast(".").replace("+", "").replace(" ", "")}.${this.fileType}"
                 val command = """
-                   ffmpeg -i pipe:0 $conversionFileName 
+                   ffmpeg -i pipe:0 -q:v 1 $conversionFileName 
                 """
                 return ffmpegProcess(command, fileName, conversionFileName, fileByteArray)
             }
@@ -78,7 +78,7 @@ object ImageTypes : FFmpegProcess {
             override fun conversion(fileName: String, fileByteArray: ByteArray): FileResponseObject {
                 val conversionFileName = "${fileName.substringBeforeLast(".").replace("+", "").replace(" ", "")}.${this.fileType}"
                 val command = """
-                   ffmpeg -i pipe:0 $conversionFileName 
+                   ffmpeg -i pipe:0 -vcodec libwebp -q:v 90 $conversionFileName 
                 """
                 return ffmpegProcess(command, fileName, conversionFileName, fileByteArray)
             }
@@ -233,7 +233,7 @@ object ImageTypes : FFmpegProcess {
             override fun conversion(fileName: String, fileByteArray: ByteArray): FileResponseObject {
                 val conversionFileName = "${fileName.substringBeforeLast(".").replace("+", "").replace(" ", "")}.${this.fileType}"
                 val command = """
-                   ffmpeg -i pipe:0 -vf scale=256:256 $conversionFileName
+                   ffmpeg -i pipe:0 -vf scale=256:256 -c:v libx264 -crf 18 -preset slow $conversionFileName
                 """
                 return ffmpegProcess(command, fileName, conversionFileName, fileByteArray)
             }

@@ -39,6 +39,9 @@ dependencies {
     implementation("com.itextpdf:itext7-core:7.2.5")
     implementation("org.apache.poi:poi-ooxml:5.2.3")
     implementation("commons-io:commons-io:2.18.0")
+    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.15.0")
+    implementation("com.fasterxml.jackson.core:jackson-databind:2.15.0")
+    implementation("com.opencsv:opencsv:5.7.1")
 }
 
 kotlin {
