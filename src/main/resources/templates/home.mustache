@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>홈</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.5.1/sockjs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
     <style>
         body {
             margin: 0;
@@ -395,6 +397,8 @@
 
             <p id="join-text">변환할 형식을 선택하세요!</p>
         </div>
+
+        <p id="h3"></p>
     </div>
 
     <script>
@@ -964,7 +968,8 @@
         const fileUploadForm = document.getElementById('file-upload-form');
         const type = document.getElementsByClassName('type');
         fileUploadForm.addEventListener('submit', async (event) => {
-            event.preventDefault(); // 데이터를 커스텀해서 서버로 보낼거기 때문에 해당 이벤트를 취소함.
+            event.preventDefault();
+            output.innerText = '업로드 중..';
             const value = select.options[select.selectedIndex].value;
             const conversionType = Array.from(type)
                     .filter(item => getComputedStyle(item).backgroundColor === 'rgb(67, 128, 213)')
@@ -986,15 +991,16 @@
                 })
             }).then(response => response.json()).then(data => {
                 if (data.fileByteArray !== null) {
+                    console.log(data)
                     const byteArray = Uint8Array.from(atob(data.fileByteArray), c => c.charCodeAt(0));
-                    const blob = new Blob([byteArray], {type: 'application/octet-stream'});
+                    const blob = new Blob([byteArray], { type: 'application/octet-stream' });
                     const link = document.createElement('a');
                     link.href = URL.createObjectURL(blob);
                     link.download = data.fileName;
                     document.body.appendChild(link);
                     link.click();
                     document.body.removeChild(link);
-                    location.reload();
+                    // location.reload();
                 } else if (data.fileName !== 'none') {
                     const link = document.createElement("a");
                     link.href = `/api/v1/fileDownload?filename=${encodeURIComponent(data.fileName)}`
@@ -1008,89 +1014,105 @@
             }).catch(error => { console.error('Fetch Error:', error); });
         });
 
-        // 카테고리가 변경될 경우
-        fileUploadForm.addEventListener('change', function() {
-            fileForm = document.getElementById('file-form');
-            fileForm.addEventListener('change', function(event) {
-                let file = event.target.files[0];
-                let reader = new FileReader();
-
-                reader.readAsArrayBuffer(file);
-                reader.onload = (event) => { fileByteArray = new Uint8Array(event.target.result); };
-
-                if(file.size > (1024 * 5) * 1024) {
-                    alert('5MB까지 업로드 가능합니다.');
-                    fileInput.value = '';
-                    fileNameDisplay.innerText = '';
-                }
-            });
-        });
-
-        // 처음용
-        let fileForm = document.getElementById('file-form');
-        fileForm.addEventListener('change', function(event) {
-            let value = select.options[select.selectedIndex].value;
+        function handleFileChange(event) {
             let file = event.target.files[0];
+            let value = select.options[select.selectedIndex].value;
+            let extension = null;
 
             let reader = new FileReader();
-            reader.readAsArrayBuffer(file); // 성공되면 onload가 호출됨
-            reader.onload = (event) => { fileByteArray = new Uint8Array(event.target.result); };
+            if (file) {
+                reader.readAsArrayBuffer(file);
+                reader.onload = (event) => fileByteArray = new Uint8Array(event.target.result);
 
-            // 확장자
-            const extension = file.type.toString().substring(file.type.toString().length - 5);
-            console.log(extension);
-            switch(value) {
-                case '이미지 파일': {
-                    if(extension.includes('png') || extension.includes('jpg') ||
-                        extension.includes('jpeg') || extension.includes('gif') || extension.includes('bmp') || extension.includes('ico') ||
-                        extension.includes('psd') || extension.includes('tiff') || extension.includes('webp') || extension.includes('pdf') ||
-                        extension.includes('docx') || extension.includes('txt') || extension.includes('svg')
-                    ) { return; } else {
+                // 확장자
+                extension = file.type.toString().substring(file.type.toString().length - 5);
+            }
+
+            switch (value) {
+                case "이미지 파일": {
+                    if (!(extension?.includes('png') || extension?.includes('jpeg') || extension?.includes('gif') || extension?.includes('bmp') || extension?.includes('icon') ||
+                        extension?.includes('shop') || extension?.includes('tiff') || extension?.includes('webp') || extension?.includes('pdf') ||
+                        extension?.includes('ment') || extension?.includes('lain') || extension?.includes('+xml'))
+                    ) {
                         fileInput.value = '';
                         fileNameDisplay.innerText = '';
                         alert('형식이 맞지 않습니다.');
                         return;
                     }
+                    break;
                 }
-                case '비디오 파일': {
-                    if(extension.includes('mp4') || extension.includes('mov') || extension.includes('mkv') ||
-                        extension.includes('webm') || extension.includes('flv') || extension.includes('avi') || extension.includes("gif")
-                    ) { return; } else {
+                case "비디오 파일": {
+                    if (!(extension?.includes('mp4') || extension?.includes('time') || extension?.includes('mkv') ||
+                        extension?.includes('webm') || extension?.includes('flv') || extension?.includes('avi') || extension?.includes("gif"))
+                    ) {
                         fileInput.value = '';
                         fileNameDisplay.innerText = '';
                         alert('형식이 맞지 않습니다.');
                         return;
                     }
+                    break;
                 }
-                case '오디오 파일': {
-                    if(extension.includes('mp3') || extension.includes('wav') || extension.includes('flac') || extension.includes('aac'))
-                    { return; } else {
+                case "오디오 파일": {
+                    if (!(extension?.includes('mpeg') || extension?.includes('wav') || extension?.includes('flac') || extension?.includes('aac'))) {
                         fileInput.value = '';
                         fileNameDisplay.innerText = '';
                         alert('형식이 맞지 않습니다.');
                         return;
                     }
+                    break;
                 }
-                case '데이터 파일': {
-                    if(extension.includes('json') || extension.includes('xml') || extension.includes('csv'))
-                    { return; } else {
+                case "데이터 파일": {
+                    if (!(extension?.includes('json') || extension?.includes('xml') || extension?.includes('csv'))) {
                         fileInput.value = '';
                         fileNameDisplay.innerText = '';
                         alert('형식이 맞지 않습니다.');
                         return;
                     }
+                    break;
                 }
             }
 
-            // 이건 프로모션을 적용할 시 해야할 듯? ㅋㅋㅋ 막상 만들고 나니까 업로드 제한을 걸어두면 무료가 아닌것 같은 느낌이 들어..
-            if(file.size > (1024 * 5) * 1024) { // 업로드된 파일의 크기를 보고 삭제하는 코드
-                alert('5MB까지 업로드 가능합니다.');
-                fileInput.value = '';
-                fileNameDisplay.innerText = '';
-            }
+            // 이건 프로모션 적용하면 하자.ㅋㅋ 업로드 용량을 제한해버리면 무료가 아니잖어...
+            // if (file.size > (1024 * 5) * 1024) {
+            //     alert('5MB까지 업로드 가능합니다.');
+            //     fileInput.value = '';
+            //     fileNameDisplay.innerText = '';
+            // }
+        }
+
+        // 카테고리가 변경될 경우
+        let fileForm = document.getElementById('file-form');
+        fileUploadForm.addEventListener('change', function() {
+            fileForm = document.getElementById('file-form');
+            fileForm.removeEventListener('change', handleFileChange);
+            fileForm.addEventListener('change', handleFileChange);
         });
 
+        // 처음을 위해서
+        fileForm.addEventListener('change', handleFileChange);
+
         conversionTypeEvent();
+
+        // ------------------- STOMP -------------------
+        let stompClient = null;
+        const output = document.getElementById("h3");
+        function stompConnect() {
+            const socket = new SockJS('/wss');
+            stompClient = Stomp.over(socket);
+            stompClient.connect({}, (frame) => {
+                console.log('Connected: ' + frame);
+                stompClient?.subscribe('/sub/1', function(responseMessage) {
+                    console.log(responseMessage.body);
+                    output.innerText = responseMessage.body;
+                })
+            });
+        }
+
+        function sendServerMessage() {
+            stompClient?.send("/pub", {}, JSON.stringify({}) );
+        }
+
+        stompConnect();
     </script>
 </body>
 </html>
