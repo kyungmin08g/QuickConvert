@@ -276,14 +276,14 @@ object ImageTypes : FFmpegProcess {
         inputStream.copyTo(process.outputStream)
         process.outputStream.close()
 
-        val fileResource = FileSystemResource(File(conversionFileName))
+        val convertFile = File(conversionFileName)
 
         return if (process.waitFor() != 0) {
-            log.error("\u001B[31mffmpeg 프로세스를 실행하던 도중 문제가 발생했습니다.\u001B[37m")
+            log.error("\u001B[31mffmpeg 프로세스를 실행하던 도중 문제가 발생했습니다.\u001B[0m")
             FileResponseObject("none", null)
         } else {
-            log.info("\u001B[34mffmpeg 프로세스가 정상적으로 처리되어 {} 파일이 {} 파일로 변환되었습니다.\u001B[37m", fileName, conversionFileName)
-            FileResponseObject(fileResource.filename, null)
+            log.info("\u001B[34mffmpeg 프로세스가 정상적으로 처리되어 {} 파일이 {} 파일로 변환되었습니다.\u001B[0m", fileName, conversionFileName)
+            FileResponseObject(convertFile.name, null)
         }
     }
 }

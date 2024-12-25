@@ -3,7 +3,6 @@ package io.github.quickconvert.types
 import io.github.quickconvert.dto.FileResponseObject
 import io.github.quickconvert.service.FFmpegProcess
 import lombok.extern.slf4j.Slf4j
-import org.bouncycastle.mime.encoding.Base64OutputStream
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.messaging.simp.SimpMessagingTemplate
@@ -88,12 +87,8 @@ object VideoTypes: FFmpegProcess {
 
     // 2024년 12월 22일 04시 02분에 처음 알았는데 원본 데이터만 변환 가능하다. 왜냐하면 원본 파일이 아니면 일부 데이터가 손상되었을 위험이 있기 때문에 ffmpeg가 에러를 이르키기 때문이다. (자세한 건 아닌데 내 방식으로 정리)
     override fun ffmpegProcess(command: String, fileName: String, conversionFileName: String, fileByteArray: ByteArray): FileResponseObject {
-        val processBuilder = ProcessBuilder(command.trim().split(" "))
-        processBuilder.redirectErrorStream(true)
-        val process = processBuilder.start()
-
-        val inputStream = ByteArrayInputStream(fileByteArray)
-        inputStream.copyTo(process.outputStream)
+        val process = ProcessBuilder(command.trim().split(" ")).apply { this.redirectErrorStream(true) }.start()
+        ByteArrayInputStream(fileByteArray).apply { this.copyTo(process.outputStream) }
         process.outputStream.close()
 
         // 프로세스의 Input를 소비하지 않기 위함. process.input 한번 호출되면 읽고나서 한번 더 호출하면 더 이상 읽을 내용리 없어 에러남. 그래서 그 내용을 저장하기 위해서 Byte로 저징하고 쓸 수 있게 만듦.
@@ -110,22 +105,14 @@ object VideoTypes: FFmpegProcess {
             BufferedReader(InputStreamReader(ByteArrayInputStream(outputLogs.readBytes()))).use { lines ->
                 lines.readLines().forEach { line ->
                     if (line.contains("Lsize=")) {
-                        val lastSize = line.substringAfterLast("Lsize=").replace(" ", "").substringBeforeLast("KiB").toFloat()
-
-                        val lastConvertSizeKB = lastSize / 1.024f
+                        val lastConvertSizeKB = line.substringAfterLast("Lsize=").replace(" ", "").substringBeforeLast("KiB").toFloat() / 1.024f
                         val lastConvertSizeMB = lastConvertSizeKB / 1024.0f
                         val lastConvertSizeGB = lastConvertSizeMB / 1024.0f
 
                         lastConvertSize = if (lastConvertSizeKB >= 1024) { // MB일 경우
-                            if (lastConvertSizeMB >= 500) { // GB일 경우
-                                "${lastConvertSizeGB.toString().let { it.substring(0, it.lastIndexOf(".") + 3) }}GB"
-                            } else {
-                                "${lastConvertSizeMB.toString().let { it.substring(0, it.lastIndexOf(".") + 3) }}MB"
-                            }
-                        } else { // KB일 경우
-                            "${lastConvertSizeKB.toString().let { it.substring(0, it.lastIndexOf(".") + 3) }}KB"
-                        }
-
+                            if (lastConvertSizeMB >= 1024) "${lastConvertSizeGB.toString().let { it.substring(0, it.lastIndexOf(".") + 3) }}GB" // GB일 경우
+                            else "${lastConvertSizeMB.toString().let { it.substring(0, it.lastIndexOf(".") + 3) }}MB"
+                        } else "${lastConvertSizeKB.toString().let { it.substring(0, it.lastIndexOf(".") + 3) }}KB" // KB일 경우
                     }
                 }
             }
@@ -133,29 +120,26 @@ object VideoTypes: FFmpegProcess {
             // 실시간 변환 중인 파일의 크기 구하기
             input.readLines().forEach { line ->
                 if (line.contains("size=")) {
-                    val convertFrame = line.substringAfterLast("frame=").replace(" ", "").substringBeforeLast("fps") // 프레임
-                    val convertSize: Float = line.substringAfterLast("size=").replace(" ", "").substringBeforeLast("KiB").toFloat() // 변환 중인 크기
-
                     // 각각의 크기
-                    val convertSizeKB = convertSize / 1.024f
+                    val convertSizeKB = line.substringAfterLast("size=").replace(" ", "").substringBeforeLast("KiB").toFloat() / 1.024f
                     val convertSizeMB = convertSizeKB / 1024.0f
                     val convertSizeGB = convertSizeMB / 1024.0f
 
                     val content = if (convertSizeKB >= 1024) { // MB일 경우
-                        if (convertSizeMB >= 500) { // GB일 경우
-                            "변환 중: ${convertSizeGB.toString().let {
+                        if (convertSizeMB >= 1024) { // GB일 경우
+                            "${convertSizeGB.toString().let {
                                 it.substring(0, it.lastIndexOf(".") + 3)
-                            }}GB, 변환 크기: $lastConvertSize"
+                            }}GB / $lastConvertSize"
                         } else {
-                            "변환 중: ${convertSizeMB.toString().let {
+                            "${convertSizeMB.toString().let {
                                 it.substring(0, it.lastIndexOf(".") + 3)
-                            }}MB, 변환 크기: $lastConvertSize"
+                            }}MB / $lastConvertSize"
                         }
                     } else { // MB와 GB가 아닐 경우
-                        "변환 중: ${convertSizeKB.toString().let {
+                        "${convertSizeKB.toString().let {
                             if ((it.lastIndexOf(".") + 1).toString().length < 3) it.substring(0, it.lastIndexOf(".") + 2)
                             else it.substring(0, it.lastIndexOf(".") + 3)
-                        }}KB, 변환 크기: $lastConvertSize"
+                        }}KB / $lastConvertSize"
                     }
 
                     stompTemplate.convertAndSend("/sub/1", content)
@@ -164,7 +148,9 @@ object VideoTypes: FFmpegProcess {
             }
         }
 
-        val conversionFile = File(conversionFileName)
+        Thread.sleep(1000)
+
+        val conversionFile = File(conversionFileName).also { it.createNewFile(); it.writeBytes(processInputStreamBytes) }
         val fileBytes = conversionFile.readBytes()
 
         var outputFile: File? = null
