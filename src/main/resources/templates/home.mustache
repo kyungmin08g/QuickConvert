@@ -512,7 +512,7 @@
         <div id="loading-container">
             <div class="spinner"></div>
             <div id="loading-text">업로드 중..</div>
-            <div id="file-size"></div>
+            <div id="file-size">잠시만 기다려주세요. 파일의 크기가 클수록 오래걸립니다.</div>
         </div>
 <!--        <div id="loading-container">-->
 <!--            <div class="spinner"></div>-->
@@ -928,8 +928,8 @@
         const resultInputDiv = document.getElementById('resultInputDiv');
 
         const lengthSelect = document.getElementById('center-conversionUnitDiv');
-        select.addEventListener('change', function(event) {
-            var value = select.options[select.selectedIndex].value;
+        select.addEventListener('change', () => {
+            let value = select.options[select.selectedIndex].value;
 
             switch(value) {
                 case '이미지 파일': updateConversionTypes('이미지 변환기', '무료로 온라인 이미지를 변환하세요!', imageHtmlContent1, imageHtmlContent2, imageTypeArray, object.image); updateFileEvent(); break;
@@ -1045,6 +1045,8 @@
                         } else {
                             document.getElementById(`${type.getAttribute('id')}`).style.backgroundColor = '#4380d5';
                             document.getElementById(`${type.getAttribute('id')}-span`).style.color = 'white';
+                            joinText.textContent = `변환 형식: ${type.getAttribute('id').toUpperCase()}`;
+                            joinText.style.color = '#4380d5';
                             types[2]++;
                         }
                     } else {
@@ -1068,14 +1070,14 @@
             }
         }
 
-        let fileByteArray = null;
         function uint8ArrayToBase64(uint8Array) {
             const chunkSize = 0x10000;
             let binaryChunks = [];
 
             for (let i = 0; i < uint8Array.byteLength; i += chunkSize) {
                 const chunk = uint8Array.subarray(i, i + chunkSize);
-                binaryChunks.push(String.fromCharCode.apply(null, chunk));
+                const binary = String.fromCharCode.apply(null, chunk);
+                binaryChunks.push(binary);
             }
 
             const binary = binaryChunks.join('');
@@ -1104,6 +1106,14 @@
             if (conversionType === '') {
                 alert('변환할 형식을 선택하세요!');
                 return;
+            }
+
+            if (value === '데이터 파일') {
+                loadingText.innerText = '변환 중..';
+                fileSize.textContent = '';
+            } else {
+                loadingText.innerText = '업로드 중..';
+                fileSize.textContent = '잠시만 기다려주세요. 파일의 크기가 클수록 오래걸립니다.';
             }
 
             let loadingContainer = document.getElementById("loading-container");
@@ -1140,7 +1150,11 @@
                     document.body.removeChild(link);
                     location.reload();
                 } else alert("해당 형식으로 변환할 수 없습니다.");
-            }).catch(error => { console.error('Fetch Error:', error); });
+            }).catch(error => {
+                loadingContainer.style.display = 'none';
+                alert("해당 형식으로 변환할 수 없습니다.");
+                console.error('Fetch Error:', error);
+            });
         });
 
         function handleFileChange(event) {
@@ -1231,8 +1245,16 @@
                 console.log('Connected: ' + frame);
                 stompClient?.subscribe('/sub/1', function(responseMessage) {
                     console.log(responseMessage.body);
-                    loadingText.innerText = '변환 중..';
-                    fileSize.textContent = responseMessage.body;
+                    if (responseMessage.body.includes('Restoration')) {
+                        loadingText.innerText = '복구 및 고품질 파일로 변환 중..';
+                        fileSize.textContent = responseMessage.body.replace('Restoration', '');
+                    } else if (responseMessage.body.includes('upload')) {
+                        loadingText.innerText = '업로드 중..';
+                        fileSize.textContent = '잠시만 기다려주세요. 파일의 크기가 클수록 오래걸립니다.';
+                    } else {
+                        loadingText.innerText = '변환 중..';
+                        fileSize.textContent = responseMessage.body;
+                    }
                 })
             });
         }

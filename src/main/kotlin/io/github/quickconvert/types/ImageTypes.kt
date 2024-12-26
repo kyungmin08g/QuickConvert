@@ -275,15 +275,27 @@ object ImageTypes : FFmpegProcess {
         val inputStream = ByteArrayInputStream(fileByteArray)
         inputStream.copyTo(process.outputStream)
         process.outputStream.close()
+        val processInputStreamBytes = process.inputStream.readBytes()
 
         val convertFile = File(conversionFileName)
+        val fileBytes = convertFile.readBytes()
+
+        var outputFile: File? = null
+        if (conversionFileName.substringAfterLast(".") == "gif") {
+            outputFile = File.createTempFile("encoded", ".txt").apply { this.deleteOnExit() }
+            FileOutputStream(outputFile!!).use { ByteArrayInputStream(processInputStreamBytes).copyTo(it) }
+        }
 
         return if (process.waitFor() != 0) {
             log.error("\u001B[31mffmpeg 프로세스를 실행하던 도중 문제가 발생했습니다.\u001B[0m")
-            FileResponseObject("none", null)
+            convertFile.delete()
+            return FileResponseObject("none", null)
         } else {
             log.info("\u001B[34mffmpeg 프로세스가 정상적으로 처리되어 {} 파일이 {} 파일로 변환되었습니다.\u001B[0m", fileName, conversionFileName)
-            FileResponseObject(convertFile.name, null)
+            convertFile.delete()
+
+            if (outputFile != null) FileResponseObject(conversionFileName, Base64.getEncoder().encodeToString(outputFile.readBytes()))
+            else FileResponseObject(conversionFileName, Base64.getEncoder().encodeToString(fileBytes))
         }
     }
 }
