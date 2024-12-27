@@ -19,7 +19,7 @@ class VideoConversionServiceImpl : VideoConversionService() {
         return when (fileInfo.conversionType) {
             VideoTypes.Conversion.MP4.name -> VideoTypes.Conversion.MP4.conversion(fileInfo.fileName, fileInfo.fileByteArray)
             VideoTypes.Conversion.MOV.name -> VideoTypes.Conversion.MOV.conversion(fileInfo.fileName, fileInfo.fileByteArray)
-            VideoTypes.Conversion.MKV.name -> VideoTypes.Conversion.MKV.conversion(fileInfo.fileName, fileInfo.fileByteArray)
+            VideoTypes.Conversion.MPEG.name -> VideoTypes.Conversion.MPEG.conversion(fileInfo.fileName, fileInfo.fileByteArray)
             VideoTypes.Conversion.WEBM.name -> VideoTypes.Conversion.WEBM.conversion(fileInfo.fileName, fileInfo.fileByteArray)
             VideoTypes.Conversion.FLV.name -> VideoTypes.Conversion.FLV.conversion(fileInfo.fileName, fileInfo.fileByteArray)
             VideoTypes.Conversion.AVI.name -> VideoTypes.Conversion.AVI.conversion(fileInfo.fileName, fileInfo.fileByteArray)

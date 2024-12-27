@@ -540,9 +540,9 @@
             video: [
                 [ document.getElementById('mp4'), document.getElementById('mp4-span'), 0 ],
                 [ document.getElementById('mov'), document.getElementById('mov-span'), 0 ],
-                [ document.getElementById('mkv'), document.getElementById('mkv-span'), 0 ],
                 [ document.getElementById('webm'), document.getElementById('webm-span'), 0 ],
                 [ document.getElementById('flv'), document.getElementById('flv-span'), 0 ],
+                [ document.getElementById('mpeg'), document.getElementById('mpeg-span'), 0 ],
                 [ document.getElementById('avi'), document.getElementById('avi-span'), 0 ],
                 [ document.getElementById('gif'), document.getElementById('gif-span'), 0 ]
             ],
@@ -567,7 +567,7 @@
         const targetElement2 = document.getElementById('convert-options-id2');
 
         const imageTypeArray = ['pdf', 'jpg', 'png', 'docx', 'txt', 'svg', 'jpeg', 'gif', 'bmp', 'ico', 'psd', 'tiff', 'webP'];
-        const videoTypeArray = ['mp4', 'mov', 'mkv', 'webm', 'flv', 'avi', 'gif'];
+        const videoTypeArray = ['mp4', 'mov', 'webm', 'flv', 'mpeg', 'avi', 'gif'];
         const audioTypeArray = ['mp3', 'wav', 'flac', 'aac'];
         const dataFileTypeArray = ['json', 'xml', 'csv'];
 
@@ -637,16 +637,16 @@
                     <div id="mov" class="type"><span id="mov-span">MOV</span></div>
                 </label>
                 <label>
-                    <input type="radio" name="convert-type" value="mkv">
-                    <div id="mkv" class="type"><span id="mkv-span">MKV</span></div>
-                </label>
-                <label>
                     <input type="radio" name="convert-type" value="webm">
                     <div id="webm" class="type"><span id="webm-span">WEBM</span></div>
                 </label>
                 <label>
                     <input type="radio" name="convert-type" value="flv">
                     <div id="flv" class="type"><span id="flv-span">FLV</span></div>
+                </label>
+                <label>
+                    <input type="radio" name="convert-type" value="mpeg">
+                    <div id="mpeg" class="type"><span id="mpeg-span">MPEG</span></div>
                 </label>
                 <label>
                     <input type="radio" name="convert-type" value="avi">
@@ -1130,7 +1130,28 @@
                 })
             }).then(response => response.json()).then(data => {
                 loadingContainer.style.display = 'none';
-                if (data.fileByteArray !== null) {
+
+                const convertFileExtension = data.fileName.substring(data.fileName.lastIndexOf('.') + 1, data.fileName.length);
+                if (convertFileExtension === 'gif') {
+                    const link = document.createElement("a");
+                    link.href = `/api/v1/fileDownload?filename=${encodeURIComponent(data.fileName)}`
+                    link.download = data.fileName;
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    location.reload();
+                } else if (convertFileExtension === 'mov') {
+                    const base64String = btoa(String.fromCharCode(...new Uint8Array(data.fileByteArray)));
+                    const byteArray = new Uint8Array(atob(base64String).split("").map(c => c.charCodeAt(0)));
+                    const blob = new Blob([byteArray], { type: 'application/octet-stream' });
+                    const link = document.createElement('a');
+                    link.href = URL.createObjectURL(blob);
+                    link.download = data.fileName;
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    location.reload();
+                } else if (data.fileByteArray !== null) {
                     const byteArray = Uint8Array.from(atob(data.fileByteArray), c => c.charCodeAt(0));
                     const blob = new Blob([byteArray], { type: 'application/octet-stream' });
                     const link = document.createElement('a');
@@ -1144,7 +1165,6 @@
                     const link = document.createElement("a");
                     link.href = `/api/v1/fileDownload?filename=${encodeURIComponent(data.fileName)}`
                     link.download = data.fileName;
-                    console.log('Download URL:', link.href);
                     document.body.appendChild(link);
                     link.click();
                     document.body.removeChild(link);
@@ -1185,7 +1205,7 @@
                     break;
                 }
                 case "비디오 파일": {
-                    if (!(extension?.includes('mp4') || extension?.includes('time') || extension?.includes('mkv') ||
+                    if (!(extension?.includes('mp4') || extension?.includes('time') || extension?.includes('mpeg') ||
                         extension?.includes('webm') || extension?.includes('flv') || extension?.includes('avi') || extension?.includes("gif"))
                     ) {
                         fileInput.value = '';
@@ -1216,11 +1236,11 @@
             }
 
             // 이건 프로모션 적용하면 하자.ㅋㅋ 업로드 용량을 제한해버리면 무료가 아니잖어...
-            if (file.size > (1024 * 30) * 1024) {
-                alert('30MB까지 업로드 가능합니다.');
-                fileInput.value = '';
-                fileNameDisplay.innerText = '';
-            }
+            // if (file.size > (1024 * 30) * 1024) {
+            //     alert('30MB까지 업로드 가능합니다.');
+            //     fileInput.value = '';
+            //     fileNameDisplay.innerText = '';
+            // }
         }
 
         // 카테고리가 변경될 경우

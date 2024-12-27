@@ -31,7 +31,7 @@ object DataFileTypes {
                 val fileByte = file.readBytes()
                 if (fileName.substringAfterLast(".") == "json") {
                     file.delete()
-                    return FileResponseObject(fileName, Base64.getEncoder().encodeToString(fileByte))
+                    return FileResponseObject(fileName, fileByte)
                 }
 
                 val fileContent = file.inputStream().bufferedReader().readText()
@@ -49,7 +49,7 @@ object DataFileTypes {
                 conversionFile.delete()
 
                 log.info("\u001B[34m{} 파일이 {} 파일로 변환되었습니다.\u001B[37m", fileName, conversionFileName)
-                return FileResponseObject(conversionFileName, Base64.getEncoder().encodeToString(fileBytes))
+                return FileResponseObject(conversionFileName, fileBytes)
             }
         },
         XML("xml") {
@@ -63,7 +63,7 @@ object DataFileTypes {
                 val fileByte = file.readBytes()
                 if (fileName.substringAfterLast(".") == "xml") {
                     file.delete()
-                    return FileResponseObject(fileName, Base64.getEncoder().encodeToString(fileByte))
+                    return FileResponseObject(fileName, fileByte)
                 }
 
                 val fileContent = file.inputStream().bufferedReader().readText()
@@ -81,7 +81,7 @@ object DataFileTypes {
                 conversionFile.delete()
 
                 log.info("\u001B[34m{} 파일이 {} 파일로 변환되었습니다.\u001B[37m", fileName, conversionFileName)
-                return FileResponseObject(conversionFileName, Base64.getEncoder().encodeToString(fileBytes))
+                return FileResponseObject(conversionFileName, fileBytes)
             }
         },
         CSV("csv") {
@@ -132,7 +132,7 @@ object DataFileTypes {
                 conversionFile.delete()
 
                 log.info("\u001B[34m{} 파일이 {} 파일로 변환되었습니다.\u001B[37m", fileName, conversionFileName)
-                return FileResponseObject(conversionFileName, Base64.getEncoder().encodeToString(csvByteArray))
+                return FileResponseObject(conversionFileName, csvByteArray)
             }
         }
     }

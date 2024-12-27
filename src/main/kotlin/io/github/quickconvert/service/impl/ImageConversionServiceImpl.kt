@@ -35,25 +35,18 @@ class ImageConversionServiceImpl : ImageConversionService() {
     }
 
     override fun conversionFileDownload(fileName: String, response: HttpServletResponse) {
-        val decodedFile = File(URLDecoder.decode(fileName, "UTF-8"))
-        val encodedFileName = URLEncoder.encode(fileName, "UTF-8")
-        val fileResource = FileSystemResource(fileName)
+        val decodedFile = File(URLDecoder.decode("convert-$fileName", "UTF-8"))
+        val encodedFileName = URLEncoder.encode("convert-$fileName", "UTF-8")
+        val fileResource = FileSystemResource("convert-$fileName")
 
         response.apply {
-            if (fileName.substringAfterLast(".") == "pdf") {
-                this.addHeader(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"$encodedFileName\"")
-                this.addHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_PDF_VALUE)
-                this.setContentLength(decodedFile.length().toInt())
-            } else {
-                this.addHeader(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"$encodedFileName\"")
-                this.addHeader(HttpHeaders.CONTENT_TYPE, "application/octet-stream")
-                this.setContentLength(decodedFile.length().toInt())
-            }
+            this.addHeader(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"$encodedFileName\"")
+            this.addHeader(HttpHeaders.CONTENT_TYPE, "application/octet-stream")
+            this.setContentLength(decodedFile.length().toInt())
         }
 
-        fileResource.inputStream.use { inputStream -> inputStream.copyTo(response.outputStream) }
+        fileResource.inputStream.use { it.copyTo(response.outputStream) }
         response.flushBuffer()
-
         decodedFile.delete()
     }
 }

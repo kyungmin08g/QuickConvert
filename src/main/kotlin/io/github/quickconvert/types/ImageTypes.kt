@@ -121,7 +121,7 @@ object ImageTypes : FFmpegProcess {
                 }
                 pdfFile.delete()
 
-                return FileResponseObject(pdfFile.name, Base64.getEncoder().encodeToString(outputStream.toByteArray()))
+                return FileResponseObject(pdfFile.name, outputStream.toByteArray())
             }
         },
         DOCX("docx") {
@@ -150,7 +150,7 @@ object ImageTypes : FFmpegProcess {
                 imageFile.delete()
                 docxFile.delete()
 
-                return FileResponseObject(docxFile.name, base64Content)
+                return FileResponseObject(docxFile.name, docxFileBytes)
             }
         },
         TXT("txt") {
@@ -188,7 +188,7 @@ object ImageTypes : FFmpegProcess {
                 imgFile.delete()
                 txtFile.delete()
 
-                return FileResponseObject(txtFile.name, Base64.getEncoder().encodeToString(txtFileOutputStream.toByteArray()))
+                return FileResponseObject(txtFile.name, txtFileOutputStream.toByteArray())
             }
         },
         SVG("svg") {
@@ -226,7 +226,7 @@ object ImageTypes : FFmpegProcess {
                 file.delete()
                 svgFile.delete()
 
-                return FileResponseObject(svgFile.name, Base64.getEncoder().encodeToString(svgFileBytes))
+                return FileResponseObject(svgFile.name, svgFileBytes)
             }
         },
         ICO("ico") {
@@ -261,7 +261,7 @@ object ImageTypes : FFmpegProcess {
                     inputFile.delete()
                     psdFile.delete()
 
-                    FileResponseObject(outputFileName, Base64.getEncoder().encodeToString(psdBytes))
+                    FileResponseObject(outputFileName, psdBytes)
                 }
             }
         }
@@ -294,8 +294,8 @@ object ImageTypes : FFmpegProcess {
             log.info("\u001B[34mffmpeg 프로세스가 정상적으로 처리되어 {} 파일이 {} 파일로 변환되었습니다.\u001B[0m", fileName, conversionFileName)
             convertFile.delete()
 
-            if (outputFile != null) FileResponseObject(conversionFileName, Base64.getEncoder().encodeToString(outputFile.readBytes()))
-            else FileResponseObject(conversionFileName, Base64.getEncoder().encodeToString(fileBytes))
+            if (outputFile != null) FileResponseObject(conversionFileName, outputFile.readBytes())
+            else FileResponseObject(conversionFileName, fileBytes)
         }
     }
 }
