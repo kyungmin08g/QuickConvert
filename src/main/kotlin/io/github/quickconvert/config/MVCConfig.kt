@@ -9,7 +9,6 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer
 class MVCConfig : WebMvcConfigurer {
     override fun addViewControllers(registry: ViewControllerRegistry) {
         registry.addViewController("/").setViewName("home")
-        registry.addViewController("/loading").setViewName("loadingScreen")
     }
 
     override fun addCorsMappings(registry: CorsRegistry) {

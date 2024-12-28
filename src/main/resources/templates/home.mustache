@@ -1140,17 +1140,6 @@
                     link.click();
                     document.body.removeChild(link);
                     location.reload();
-                } else if (convertFileExtension === 'mov') {
-                    const base64String = btoa(String.fromCharCode(...new Uint8Array(data.fileByteArray)));
-                    const byteArray = new Uint8Array(atob(base64String).split("").map(c => c.charCodeAt(0)));
-                    const blob = new Blob([byteArray], { type: 'application/octet-stream' });
-                    const link = document.createElement('a');
-                    link.href = URL.createObjectURL(blob);
-                    link.download = data.fileName;
-                    document.body.appendChild(link);
-                    link.click();
-                    document.body.removeChild(link);
-                    location.reload();
                 } else if (data.fileByteArray !== null) {
                     const byteArray = Uint8Array.from(atob(data.fileByteArray), c => c.charCodeAt(0));
                     const blob = new Blob([byteArray], { type: 'application/octet-stream' });
@@ -1236,11 +1225,11 @@
             }
 
             // 이건 프로모션 적용하면 하자.ㅋㅋ 업로드 용량을 제한해버리면 무료가 아니잖어...
-            // if (file.size > (1024 * 30) * 1024) {
-            //     alert('30MB까지 업로드 가능합니다.');
-            //     fileInput.value = '';
-            //     fileNameDisplay.innerText = '';
-            // }
+            if (file.size > (1024 * 30) * 1024) {
+                alert('30MB까지 업로드 가능합니다.');
+                fileInput.value = '';
+                fileNameDisplay.innerText = '';
+            }
         }
 
         // 카테고리가 변경될 경우
@@ -1272,7 +1261,7 @@
                         loadingText.innerText = '업로드 중..';
                         fileSize.textContent = '잠시만 기다려주세요. 파일의 크기가 클수록 오래걸립니다.';
                     } else {
-                        loadingText.innerText = '변환 중..';
+                        loadingText.innerText = '복구 및 고품질 파일로 변환 중..';
                         fileSize.textContent = responseMessage.body;
                     }
                 })

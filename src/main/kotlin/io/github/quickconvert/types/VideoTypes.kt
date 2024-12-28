@@ -51,7 +51,6 @@ object VideoTypes: FFmpegProcess {
                 FLV : O
                 AVI : O
                 GIF : O
-                근데 이제 파일을 다운로드하는 문제만 해결되면 됨
              */
             override fun conversion(fileName: String, fileByteArray: ByteArray): FileResponseObject {
                 val conversionFileName = "${fileName.substringBeforeLast(".").replace(" ", "")}.${this.fileType}"
@@ -59,7 +58,7 @@ object VideoTypes: FFmpegProcess {
 
                 val restorationFile = File(filename).also { it.createNewFile(); it.writeBytes(fileByteArray) }
                 val command = """
-                    ffmpeg -err_detect ignore_err -i ${restorationFile.absolutePath} -c:v prores_ks -profile:v 3 -c:a aac -b:a 320k -vf scale=1920:1080 -crf 35 -preset fast -threads 4 -strict experimental -f mov convert-$conversionFileName
+                    ffmpeg -err_detect ignore_err -i ${restorationFile.absolutePath} -c:v libx264 -preset slow -crf 18 -c:a aac -b:a 320k -vf scale=1920:1080 -threads 4 -strict experimental -f mov convert-$conversionFileName
                 """
 
                 return ffmpegProcess(command, filename, conversionFileName, fileByteArray)
@@ -183,17 +182,13 @@ object VideoTypes: FFmpegProcess {
         process.outputStream.close()
 
         val processInputStreamBytes = process.inputStream.readBytes()
-        ByteArrayInputStream(processInputStreamBytes).bufferedReader().useLines { input -> input.forEach { println(it) } }
-
-        val outputLogs = File.createTempFile("ffmpegLogs", ".txt").apply {
-            this.deleteOnExit()
-            this.writeBytes(processInputStreamBytes)
+        val outputLogs = File.createTempFile("ffmpegLogs", ".txt").also {
+            it.deleteOnExit()
+            it.writeBytes(processInputStreamBytes)
         }
 
         ByteArrayInputStream(processInputStreamBytes).bufferedReader().useLines { input ->
             input.forEach {
-                println(it)
-
                 // 파일 변환 크기 구하기
                 var lastConvertSize: String? = null
                 BufferedReader(InputStreamReader(ByteArrayInputStream(outputLogs.readBytes()))).use { lines ->
@@ -244,31 +239,20 @@ object VideoTypes: FFmpegProcess {
             }
         }
 
-        Thread.sleep(2000)
-
+        Thread.sleep(1500)
         val conversionFile = File("convert-${conversionFileName}")
         val fileBytes = conversionFile.readBytes()
 
-        // ---------------------------------------------------------------------------------------------------------
-
-//        var fakeFile: File? = null
-//        if (conversionFileName.substringAfterLast(".") == "mov") {
-//            fakeFile = File("output.txt").also{ it.createNewFile() }
-//            fakeFile.outputStream().write(fileBytes)
-//        }
-
         return if (process.waitFor() != 0) {
-            log.error("\u001B[31mffmpeg 프로세스를 실행하던 도중 문제가 발생했습니다.\u001B[0m")
             File(fileName).delete()
             conversionFile.delete()
+            log.error("\u001B[31mffmpeg 프로세스를 실행하던 도중 문제가 발생했습니다.\u001B[0m")
             FileResponseObject("none", null)
         } else {
-            log.info("\u001B[34mffmpeg 프로세스가 정상적으로 처리되어 {} 파일이 {} 파일로 변환되었습니다.\u001B[0m", fileName, conversionFileName)
             File(fileName).delete()
-            if (conversionFileName.substringAfterLast(".") != "gif") conversionFile.delete()
+            if (conversionFileName.substringAfterLast(".") != "gif" || conversionFileName.substringAfterLast(".") != "mov") conversionFile.delete()
 
-//            if (fakeFile != null) FileResponseObject(conversionFileName, Base64.getEncoder().encodeToString(fakeFile.readBytes()))
-//            else FileResponseObject(conversionFileName, Base64.getEncoder().encodeToString(fileBytes))
+            log.info("\u001B[34mffmpeg 프로세스가 정상적으로 처리되어 {} 파일이 {} 파일로 변환되었습니다.\u001B[0m", fileName, conversionFileName)
             FileResponseObject(conversionFileName, fileBytes)
         }
     }
