@@ -10,8 +10,6 @@ import org.slf4j.LoggerFactory
 import java.io.File
 import java.io.FileWriter
 import java.io.IOException
-import java.util.*
-
 
 @Slf4j
 object DataFileTypes {
@@ -22,7 +20,7 @@ object DataFileTypes {
     enum class Conversion(val fileType: String) : io.github.quickconvert.service.Conversion {
         JSON("json") {
             override fun conversion(fileName: String, fileByteArray: ByteArray): FileResponseObject {
-                val file = File(fileName).apply {
+                val file = File("files/$fileName").apply {
                     this.createNewFile()
                     this.writeBytes(fileByteArray)
                 }
@@ -39,7 +37,7 @@ object DataFileTypes {
                 val jsonObject = objectMapper.writeValueAsString(xmlObject)
 
                 val conversionFileName = "${fileName.substringBeforeLast(".")}.${this.fileType}"
-                val conversionFile = File(conversionFileName).apply {
+                val conversionFile = File("files/$conversionFileName").apply {
                     this.createNewFile()
                     this.writeBytes(jsonObject.toByteArray())
                 }
@@ -54,7 +52,7 @@ object DataFileTypes {
         },
         XML("xml") {
             override fun conversion(fileName: String, fileByteArray: ByteArray): FileResponseObject {
-                val file = File(fileName).apply {
+                val file = File("files/$fileName").apply {
                     this.createNewFile()
                     this.writeBytes(fileByteArray)
                 }
@@ -71,7 +69,7 @@ object DataFileTypes {
                 val xmlObject = xmlMapper.writeValueAsString(jsonObject)
 
                 val conversionFileName = "${fileName.substringBeforeLast(".")}.${this.fileType}"
-                val conversionFile = File(conversionFileName).apply {
+                val conversionFile = File("files/$conversionFileName").apply {
                     this.createNewFile()
                     this.writeBytes(xmlObject.toByteArray())
                 }
@@ -86,7 +84,7 @@ object DataFileTypes {
         },
         CSV("csv") {
             override fun conversion(fileName: String, fileByteArray: ByteArray): FileResponseObject {
-                val file = File(fileName).apply {
+                val file = File("files/$fileName").apply {
                     this.createNewFile()
                     this.writeBytes(fileByteArray)
                 }
@@ -104,7 +102,7 @@ object DataFileTypes {
                     }
 
                     var header: Array<String>?
-                    CSVWriter(FileWriter(conversionFileName)).use { writer ->
+                    CSVWriter(FileWriter("files/$conversionFileName")).use { writer ->
                         if (data is List<*>) {
                             val listData = data as List<Map<String, Any>>
                             if (listData.isNotEmpty()) {
@@ -125,7 +123,7 @@ object DataFileTypes {
                     }
                 } catch (e: IOException) { e.printStackTrace() }
 
-                val conversionFile = File(conversionFileName)
+                val conversionFile = File("files/$conversionFileName")
                 val csvByteArray = conversionFile.readBytes()
 
                 file.delete()

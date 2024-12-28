@@ -9,8 +9,13 @@ import io.github.quickconvert.service.impl.VideoConversionServiceImpl
 import jakarta.servlet.http.HttpServletResponse
 import lombok.extern.slf4j.Slf4j
 import org.slf4j.LoggerFactory
+import org.springframework.core.io.FileSystemResource
+import org.springframework.http.HttpHeaders
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
+import java.io.File
+import java.net.URLDecoder
+import java.net.URLEncoder
 
 @RestController
 @RequestMapping("/api/v1")
@@ -37,8 +42,19 @@ class APIController(
     }
 
     @GetMapping("/fileDownload")
-    fun imageConversion(
-        @RequestParam("filename") fileName: String,
-        response: HttpServletResponse
-    ) = imageService.conversionFileDownload(fileName, response)
+    fun convertFileDownload(@RequestParam("filename") fileName: String, response: HttpServletResponse) {
+        val decodedFile = File(URLDecoder.decode("files/convert-$fileName", "UTF-8"))
+        val encodedFileName = URLEncoder.encode("files/convert-$fileName", "UTF-8")
+        val fileResource = FileSystemResource("files/convert-$fileName")
+
+        response.apply {
+            this.addHeader(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"$encodedFileName\"")
+            this.addHeader(HttpHeaders.CONTENT_TYPE, "application/octet-stream")
+            this.setContentLength(decodedFile.length().toInt())
+        }
+
+        fileResource.inputStream.use { it.copyTo(response.outputStream) }
+        response.flushBuffer()
+        File("files/convert-$fileName").delete()
+    }
 }

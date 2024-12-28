@@ -4,13 +4,7 @@ import io.github.quickconvert.dto.FileInfo
 import io.github.quickconvert.dto.FileResponseObject
 import io.github.quickconvert.service.ImageConversionService
 import io.github.quickconvert.types.ImageTypes
-import jakarta.servlet.http.HttpServletResponse
-import org.springframework.core.io.FileSystemResource
-import org.springframework.http.HttpHeaders
 import org.springframework.stereotype.Service
-import java.io.File
-import java.net.URLDecoder
-import java.net.URLEncoder
 
 @Service
 class ImageConversionServiceImpl : ImageConversionService() {
@@ -31,21 +25,5 @@ class ImageConversionServiceImpl : ImageConversionService() {
             ImageTypes.Conversion.PSD.name -> ImageTypes.Conversion.PSD.conversion(fileInfo.fileName, fileInfo.fileByteArray)
             else -> FileResponseObject("none", null)
         }
-    }
-
-    override fun conversionFileDownload(fileName: String, response: HttpServletResponse) {
-        val decodedFile = File(URLDecoder.decode("convert-$fileName", "UTF-8"))
-        val encodedFileName = URLEncoder.encode("convert-$fileName", "UTF-8")
-        val fileResource = FileSystemResource("convert-$fileName")
-
-        response.apply {
-            this.addHeader(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"$encodedFileName\"")
-            this.addHeader(HttpHeaders.CONTENT_TYPE, "application/octet-stream")
-            this.setContentLength(decodedFile.length().toInt())
-        }
-
-        fileResource.inputStream.use { it.copyTo(response.outputStream) }
-        response.flushBuffer()
-        File("convert-$fileName").delete()
     }
 }

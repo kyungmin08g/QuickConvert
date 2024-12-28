@@ -419,20 +419,20 @@
             <div class="cube-icon floating-cube">
                 <img src="conversionIcon.png" alt="Icon">
             </div>
-            <h2 id="title">이미지 변환기</h2>
-            <p id="description">무료로 온라인 이미지를 변환하세요!</p>
+            <h2 id="title">이미지 파일 변환기</h2>
+            <p id="description">무료로 온라인 이미지 파일을 변환하세요!</p>
             <form class="file-form" id="file-upload-form">
                 <select name="conversion" id="conversion-choice">
                     <option value="이미지 파일">이미지 파일</option>
                     <option value="비디오 파일">비디오 파일</option>
                     <option value="오디오 파일">오디오 파일</option>
                     <option value="데이터 파일">데이터 파일</option>
-                    <option value="시간 단위">시간 단위</option>
-                    <option value="길이 단위">길이 단위</option>
-                    <option value="온도 단위">온도 단위</option>
-                    <option value="질량 단위">질량 단위</option>
-                    <option value="진수 계산">진수 계산</option>
-                    <option value="진동수 파장">진동수 파장</option>
+<!--                    <option value="시간 단위">시간 단위</option>-->
+<!--                    <option value="길이 단위">길이 단위</option>-->
+<!--                    <option value="온도 단위">온도 단위</option>-->
+<!--                    <option value="질량 단위">질량 단위</option>-->
+<!--                    <option value="진수 계산">진수 계산</option>-->
+<!--                    <option value="진동수 파장">진동수 파장</option>-->
                 </select>
 
                 <div id="form-and-submit">
@@ -942,10 +942,10 @@
             let value = select.options[select.selectedIndex].value;
 
             switch(value) {
-                case '이미지 파일': updateConversionTypes('이미지 변환기', '무료로 온라인 이미지를 변환하세요!', imageHtmlContent1, imageHtmlContent2, imageTypeArray, object.image); updateFileEvent(); break;
-                case '비디오 파일': updateConversionTypes('비디오 변환기', '무료로 온라인 비디오를 변환하세요!', '', videoHtmlContent, videoTypeArray, object.video); updateFileEvent(); break;
-                case '오디오 파일': updateConversionTypes('오디오 변환기', '무료로 온라인 오디오를 변환하세요!', '', audioHtmlContent, audioTypeArray, object.audio); updateFileEvent(); break;
-                case '데이터 파일': updateConversionTypes('데이터 파일 변환기', '무료로 온라인 데이터 파일를 변환하세요!', '', dataFileHtmlContent, dataFileTypeArray, object.data_file); updateFileEvent(); break;
+                case '이미지 파일': updateConversionTypes('이미지 파일 변환기', '무료로 온라인 이미지 파일을 변환하세요!', imageHtmlContent1, imageHtmlContent2, imageTypeArray, object.image); updateFileEvent(); break;
+                case '비디오 파일': updateConversionTypes('비디오 파일 변환기', '무료로 온라인 비디오 파일을 변환하세요!', '', videoHtmlContent, videoTypeArray, object.video); updateFileEvent(); break;
+                case '오디오 파일': updateConversionTypes('오디오 파일 변환기', '무료로 온라인 오디오 파일을 변환하세요!', '', audioHtmlContent, audioTypeArray, object.audio); updateFileEvent(); break;
+                case '데이터 파일': updateConversionTypes('데이터 파일 변환기', '무료로 온라인 데이터 파일을 변환하세요!', '', dataFileHtmlContent, dataFileTypeArray, object.data_file); updateFileEvent(); break;
                 case '시간 단위': updateNotFileEvent('시간 단위 변환기', '시간의 단위를 당장 변환해보세요!', timeHtmlContent); break;
                 case '길이 단위': updateNotFileEvent('길이 단위 변환기', '거리 및 시간의 단위를 당장 변환해보세요!', lengthHtmlContent); break;
                 case '온도 단위': updateNotFileEvent('온도 단위 변환기', '온도 단위를 당장 변환해보세요!', temperatureHtmlContent); break;
@@ -1235,8 +1235,8 @@
             }
 
             // 이건 프로모션 적용하면 하자.ㅋㅋ 업로드 용량을 제한해버리면 무료가 아니잖어...
-            if (file.size > (1024 * 70) * 1024) {
-                alert('70MB까지 업로드 가능합니다.');
+            if (file.size > (1024 * 40) * 1024) {
+                alert('40MB까지 업로드 가능합니다.');
                 fileInput.value = '';
                 fileNameDisplay.innerText = '';
             }
@@ -1268,7 +1268,7 @@
                         loadingText.innerText = '업로드 중..';
                         fileSize.textContent = '잠시만 기다려주세요. 파일의 크기가 클수록 오래걸립니다.';
                     } else {
-                        loadingText.innerText = '복구 및 고품질 파일로 변환 중..';
+                        loadingText.innerText = '복구 및 변환 중..';
                         fileSize.textContent = responseMessage.body;
                     }
                 })

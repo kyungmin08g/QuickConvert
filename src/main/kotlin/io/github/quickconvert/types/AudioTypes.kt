@@ -35,9 +35,9 @@ object AudioTypes : FFmpegProcess {
                 val conversionFileName = "${fileName.substringBeforeLast(".").replace(" ", "")}.${this.fileType}"
                 val filename = "${fileName.substringBeforeLast(".").replace(" ", "")}.${fileName.substringAfterLast(".")}"
 
-                val restorationFile = File(filename).also { it.createNewFile(); it.writeBytes(fileByteArray) }
+                val restorationFile = File("files/$fileName").also { it.createNewFile(); it.writeBytes(fileByteArray) }
                 val command = """
-                   ffmpeg -err_detect ignore_err -i ${restorationFile.absolutePath} -c:a libmp3lame -qscale:a 0 -b:a 320k convert-$conversionFileName
+                   ffmpeg -err_detect ignore_err -i ${restorationFile.absolutePath} -c:a libmp3lame -qscale:a 0 -b:a 320k files/convert-$conversionFileName
                 """
 
                 return ffmpegProcess(command, filename, conversionFileName, fileByteArray)
@@ -56,9 +56,9 @@ object AudioTypes : FFmpegProcess {
                 val conversionFileName = "${fileName.substringBeforeLast(".").replace(" ", "")}.${this.fileType}"
                 val filename = "${fileName.substringBeforeLast(".").replace(" ", "")}.${fileName.substringAfterLast(".")}"
 
-                val restorationFile = File(filename).also { it.createNewFile(); it.writeBytes(fileByteArray) }
+                val restorationFile = File("files/$fileName").also { it.createNewFile(); it.writeBytes(fileByteArray) }
                 val command = """
-                   ffmpeg -err_detect ignore_err -i ${restorationFile.absolutePath} -c:a pcm_s24le convert-$conversionFileName
+                   ffmpeg -err_detect ignore_err -i ${restorationFile.absolutePath} -c:a pcm_s24le files/convert-$conversionFileName
                 """
 
                 return ffmpegProcess(command, filename, conversionFileName, fileByteArray)
@@ -77,9 +77,9 @@ object AudioTypes : FFmpegProcess {
                 val conversionFileName = "${fileName.substringBeforeLast(".").replace(" ", "")}.${this.fileType}"
                 val filename = "${fileName.substringBeforeLast(".").replace(" ", "")}.${fileName.substringAfterLast(".")}"
 
-                val restorationFile = File(filename).also { it.createNewFile(); it.writeBytes(fileByteArray) }
+                val restorationFile = File("files/$fileName").also { it.createNewFile(); it.writeBytes(fileByteArray) }
                 val command = """
-                   ffmpeg -err_detect ignore_err -i ${restorationFile.absolutePath} -c:a flac -compression_level 12 convert-$conversionFileName
+                   ffmpeg -err_detect ignore_err -i ${restorationFile.absolutePath} -c:a flac -compression_level 12 files/convert-$conversionFileName
                 """
 
                 return ffmpegProcess(command, filename, conversionFileName, fileByteArray)
@@ -98,9 +98,9 @@ object AudioTypes : FFmpegProcess {
                 val conversionFileName = "${fileName.substringBeforeLast(".").replace(" ", "")}.${this.fileType}"
                 val filename = "${fileName.substringBeforeLast(".").replace(" ", "")}.${fileName.substringAfterLast(".")}"
 
-                val restorationFile = File(filename).also { it.createNewFile(); it.writeBytes(fileByteArray) }
+                val restorationFile = File("files/$fileName").also { it.createNewFile(); it.writeBytes(fileByteArray) }
                 val command = """
-                   ffmpeg -err_detect ignore_err -i ${restorationFile.absolutePath} -c:a pcm_s16le convert-$conversionFileName
+                   ffmpeg -err_detect ignore_err -i ${restorationFile.absolutePath} -c:a pcm_s16le files/convert-$conversionFileName
                 """
 
                 return ffmpegProcess(command, filename, conversionFileName, fileByteArray)
@@ -119,9 +119,9 @@ object AudioTypes : FFmpegProcess {
                 val conversionFileName = "${fileName.substringBeforeLast(".").replace(" ", "")}.${this.fileType}"
                 val filename = "${fileName.substringBeforeLast(".").replace(" ", "")}.${fileName.substringAfterLast(".")}"
 
-                val restorationFile = File(filename).also { it.createNewFile(); it.writeBytes(fileByteArray) }
+                val restorationFile = File("files/$fileName").also { it.createNewFile(); it.writeBytes(fileByteArray) }
                 val command = """
-                   ffmpeg -err_detect ignore_err -i ${restorationFile.absolutePath} -c:a aac -b:a 192k convert-$conversionFileName
+                   ffmpeg -err_detect ignore_err -i ${restorationFile.absolutePath} -c:a aac -b:a 192k files/convert-$conversionFileName
                 """
 
                 return ffmpegProcess(command, filename, conversionFileName, fileByteArray)
@@ -140,9 +140,9 @@ object AudioTypes : FFmpegProcess {
                 val conversionFileName = "${fileName.substringBeforeLast(".").replace(" ", "")}.${this.fileType}"
                 val filename = "${fileName.substringBeforeLast(".").replace(" ", "")}.${fileName.substringAfterLast(".")}"
 
-                val restorationFile = File(filename).also { it.createNewFile(); it.writeBytes(fileByteArray) }
+                val restorationFile = File("files/$fileName").also { it.createNewFile(); it.writeBytes(fileByteArray) }
                 val command = """
-                   ffmpeg -i ${restorationFile.absolutePath} -c:a aac -b:a 320k convert-$conversionFileName
+                   ffmpeg -i ${restorationFile.absolutePath} -c:a aac -b:a 320k files/convert-$conversionFileName
                 """
 
                 return ffmpegProcess(command, filename, conversionFileName, fileByteArray)
@@ -210,16 +210,17 @@ object AudioTypes : FFmpegProcess {
             }
         }
 
-        val conversionFile = File("convert-$conversionFileName")
+        Thread.sleep(1000)
+        val conversionFile = File("files/convert-$conversionFileName")
         val fileBytes = conversionFile.readBytes()
 
         return if (process.waitFor() != 0) {
-            File(fileName).delete()
+            File("files/$fileName").delete()
             conversionFile.delete()
             log.error("\u001B[31mffmpeg 프로세스를 실행하던 도중 문제가 발생했습니다.\u001B[0m")
             return FileResponseObject("none", null)
         } else {
-            File(fileName).delete()
+            File("files/$fileName").delete()
             conversionFile.delete()
             log.info("\u001B[34mffmpeg 프로세스가 정상적으로 처리되어 {} 파일이 {} 파일로 변환되었습니다.\u001B[0m", fileName, conversionFileName)
             FileResponseObject(conversionFileName, fileBytes)
