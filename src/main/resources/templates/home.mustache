@@ -550,13 +550,15 @@
                 [ document.getElementById('mp3'), document.getElementById('mp3-span'), 0 ],
                 [ document.getElementById('wav'), document.getElementById('wav-span'), 0 ],
                 [ document.getElementById('flac'), document.getElementById('flac-span'), 0 ],
-                [ document.getElementById('aac'), document.getElementById('aac-span'), 0 ]
+                [ document.getElementById('ogg'), document.getElementById('ogg-span'), 0 ],
+                [ document.getElementById('m4a'), document.getElementById('m4a-span'), 0 ],
+                [ document.getElementById('alac'), document.getElementById('alac-span'), 0 ]
             ],
             data_file: [
                 [ document.getElementById('json'), document.getElementById('json-span'), 0 ],
                 [ document.getElementById('xml'), document.getElementById('xml-span'), 0 ],
                 [ document.getElementById('csv'), document.getElementById('csv-span'), 0 ]
-            ],
+            ]
         };
         let joinText = document.getElementById('join-text');
 
@@ -568,7 +570,7 @@
 
         const imageTypeArray = ['pdf', 'jpg', 'png', 'docx', 'txt', 'svg', 'jpeg', 'gif', 'bmp', 'ico', 'psd', 'tiff', 'webP'];
         const videoTypeArray = ['mp4', 'mov', 'webm', 'flv', 'mpeg', 'avi', 'gif'];
-        const audioTypeArray = ['mp3', 'wav', 'flac', 'aac'];
+        const audioTypeArray = ['mp3', 'wav', 'flac', 'aiff', 'm4a', 'aac'];
         const dataFileTypeArray = ['json', 'xml', 'csv'];
 
         const imageHtmlContent1 = `
@@ -669,6 +671,14 @@
                 <label>
                     <input type="radio" name="convert-type" value="flac">
                     <div id="flac" class="type"><span id="flac-span">FLAC</span></div>
+                </label>
+                <label>
+                    <input type="radio" name="convert-type" value="aiff">
+                    <div id="aiff" class="type"><span id="aiff-span">AIFF</span></div>
+                </label>
+                <label>
+                    <input type="radio" name="convert-type" value="m4a">
+                    <div id="m4a" class="type"><span id="m4a-span">M4A</span></div>
                 </label>
                 <label>
                     <input type="radio" name="convert-type" value="aac">
@@ -1205,7 +1215,7 @@
                     break;
                 }
                 case "오디오 파일": {
-                    if (!(extension?.includes('mpeg') || extension?.includes('wav') || extension?.includes('flac') || extension?.includes('aac'))) {
+                    if (!(extension?.includes('mpeg') || extension?.includes('wav') || extension?.includes('flac') || extension?.includes('aiff') || extension?.includes('m4a') || extension?.includes('aac'))) {
                         fileInput.value = '';
                         fileNameDisplay.innerText = '';
                         alert('형식이 맞지 않습니다.');
@@ -1225,8 +1235,8 @@
             }
 
             // 이건 프로모션 적용하면 하자.ㅋㅋ 업로드 용량을 제한해버리면 무료가 아니잖어...
-            if (file.size > (1024 * 30) * 1024) {
-                alert('30MB까지 업로드 가능합니다.');
+            if (file.size > (1024 * 70) * 1024) {
+                alert('70MB까지 업로드 가능합니다.');
                 fileInput.value = '';
                 fileNameDisplay.innerText = '';
             }
@@ -1254,10 +1264,7 @@
                 console.log('Connected: ' + frame);
                 stompClient?.subscribe('/sub/1', function(responseMessage) {
                     console.log(responseMessage.body);
-                    if (responseMessage.body.includes('Restoration')) {
-                        loadingText.innerText = '복구 및 고품질 파일로 변환 중..';
-                        fileSize.textContent = responseMessage.body.replace('Restoration', '');
-                    } else if (responseMessage.body.includes('upload')) {
+                    if (responseMessage.body.includes('upload')) {
                         loadingText.innerText = '업로드 중..';
                         fileSize.textContent = '잠시만 기다려주세요. 파일의 크기가 클수록 오래걸립니다.';
                     } else {

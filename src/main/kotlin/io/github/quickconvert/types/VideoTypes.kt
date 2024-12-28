@@ -31,15 +31,19 @@ object VideoTypes: FFmpegProcess {
                 GIF : X
              */
             override fun conversion(fileName: String, fileByteArray: ByteArray): FileResponseObject {
-                val conversionFileName = "${fileName.substringBeforeLast(".").replace(" ", "")}.${this.fileType}"
-                val filename = "${fileName.substringBeforeLast(".").replace(" ", "")}.${fileName.substringAfterLast(".")}"
+                if (fileName.substringAfterLast(".") != "gif") {
+                    val conversionFileName = "${fileName.substringBeforeLast(".").replace(" ", "")}.${this.fileType}"
+                    val filename = "${fileName.substringBeforeLast(".").replace(" ", "")}.${fileName.substringAfterLast(".")}"
 
-                val restorationFile = File(filename).also { it.createNewFile(); it.writeBytes(fileByteArray) }
-                val command = """
+                    val restorationFile = File(filename).also { it.createNewFile(); it.writeBytes(fileByteArray) }
+                    val command = """
                    ffmpeg -err_detect ignore_err -i ${restorationFile.absolutePath} -c:v libx264 -preset slow -crf 14 -c:a aac -b:a 320k -vf scale=1920:1080 -threads 4 -strict experimental -f mp4 convert-$conversionFileName
                 """
 
-                return ffmpegProcess(command, filename, conversionFileName, fileByteArray)
+                    return ffmpegProcess(command, filename, conversionFileName, fileByteArray)
+                }
+
+                return FileResponseObject("none", null)
             }
         },
         MOV("mov") {
@@ -58,7 +62,7 @@ object VideoTypes: FFmpegProcess {
 
                 val restorationFile = File(filename).also { it.createNewFile(); it.writeBytes(fileByteArray) }
                 val command = """
-                    ffmpeg -err_detect ignore_err -i ${restorationFile.absolutePath} -c:v libx264 -preset slow -crf 18 -c:a aac -b:a 320k -vf scale=1920:1080 -threads 4 -strict experimental -f mov convert-$conversionFileName
+                    ffmpeg -err_detect ignore_err -i ${restorationFile.absolutePath} -c:v libx264 -preset slow -crf 16 -c:a aac -b:a 320k -vf scale=1920:1080 -pix_fmt yuv420p -threads 4 -strict experimental -f mov convert-$conversionFileName
                 """
 
                 return ffmpegProcess(command, filename, conversionFileName, fileByteArray)
@@ -119,15 +123,19 @@ object VideoTypes: FFmpegProcess {
                 GIF : X
              */
             override fun conversion(fileName: String, fileByteArray: ByteArray): FileResponseObject {
-                val conversionFileName = "${fileName.substringBeforeLast(".").replace(" ", "")}.${this.fileType}"
-                val filename = "${fileName.substringBeforeLast(".").replace(" ", "")}.${fileName.substringAfterLast(".")}"
+                if (fileName.substringAfterLast(".") != "gif") {
+                    val conversionFileName = "${fileName.substringBeforeLast(".").replace(" ", "")}.${this.fileType}"
+                    val filename = "${fileName.substringBeforeLast(".").replace(" ", "")}.${fileName.substringAfterLast(".")}"
 
-                val restorationFile = File(filename).also { it.createNewFile(); it.writeBytes(fileByteArray) }
-                val command = """
+                    val restorationFile = File(filename).also { it.createNewFile(); it.writeBytes(fileByteArray) }
+                    val command = """
                    ffmpeg -err_detect ignore_err -i ${restorationFile.absolutePath} -c:v mpeg2video -b:v 20000k -s 1920x1080 -c:a mp2 -b:a 320k -y convert-$conversionFileName
                 """
 
-                return ffmpegProcess(command, filename, conversionFileName, fileByteArray)
+                    return ffmpegProcess(command, filename, conversionFileName, fileByteArray)
+                }
+
+                return FileResponseObject("none", null)
             }
         },
         AVI("avi") {
@@ -141,15 +149,19 @@ object VideoTypes: FFmpegProcess {
                 GIF : X
              */
             override fun conversion(fileName: String, fileByteArray: ByteArray): FileResponseObject {
-                val conversionFileName = "${fileName.substringBeforeLast(".").replace(" ", "")}.${this.fileType}"
-                val filename = "${fileName.substringBeforeLast(".").replace(" ", "")}.${fileName.substringAfterLast(".")}"
+                if (fileName.substringAfterLast(".") != "gif") {
+                    val conversionFileName = "${fileName.substringBeforeLast(".").replace(" ", "")}.${this.fileType}"
+                    val filename = "${fileName.substringBeforeLast(".").replace(" ", "")}.${fileName.substringAfterLast(".")}"
 
-                val restorationFile = File(filename).also { it.createNewFile(); it.writeBytes(fileByteArray) }
-                val command = """
+                    val restorationFile = File(filename).also { it.createNewFile(); it.writeBytes(fileByteArray) }
+                    val command = """
                    ffmpeg -err_detect ignore_err -i ${restorationFile.absolutePath} -c:v libx264 -preset slow -crf 14 -c:a libmp3lame -b:a 320k -vf scale=1920:1080 -threads 4 -strict experimental -f avi convert-$conversionFileName
                 """
 
-                return ffmpegProcess(command, filename, conversionFileName, fileByteArray)
+                    return ffmpegProcess(command, filename, conversionFileName, fileByteArray)
+                }
+
+                return FileResponseObject("none", null)
             }
         },
         GIF("gif") {
@@ -217,17 +229,18 @@ object VideoTypes: FFmpegProcess {
                         val content = if (convertSizeKB >= 1024) { // MB일 경우
                             if (convertSizeMB >= 1024) { // GB일 경우
                                 "${convertSizeGB.toString().let {
-                                    it.substring(0, it.lastIndexOf(".") + 3)
+                                    if ((it.lastIndexOf(".")).toString().length == 2) it.substring(0, it.lastIndexOf(".") + 2)
+                                    else it.substring(0, it.lastIndexOf(".") + 3)
                                 }}GB / $lastConvertSize"
                             } else {
                                 "${convertSizeMB.toString().let {
-                                    if ((it.lastIndexOf(".") + 1).toString().length < 3) it.substring(0, it.lastIndexOf(".") + 2)
+                                    if ((it.lastIndexOf(".")).toString().length == 2) it.substring(0, it.lastIndexOf(".") + 2)
                                     else it.substring(0, it.lastIndexOf(".") + 3)
                                 }}MB / $lastConvertSize"
                             }
                         } else { // MB와 GB가 아닐 경우
                             "${convertSizeKB.toString().let {
-                                if ((it.lastIndexOf(".") + 1).toString().length < 3) it.substring(0, it.lastIndexOf(".") + 2)
+                                if ((it.lastIndexOf(".")).toString().length <= 2) it.substring(0, it.lastIndexOf(".") + 2)
                                 else it.substring(0, it.lastIndexOf(".") + 3)
                             }}KB / $lastConvertSize"
                         }
@@ -239,7 +252,7 @@ object VideoTypes: FFmpegProcess {
             }
         }
 
-        Thread.sleep(1500)
+        Thread.sleep(1000)
         val conversionFile = File("convert-${conversionFileName}")
         val fileBytes = conversionFile.readBytes()
 
@@ -250,7 +263,7 @@ object VideoTypes: FFmpegProcess {
             FileResponseObject("none", null)
         } else {
             File(fileName).delete()
-            if (conversionFileName.substringAfterLast(".") != "gif" || conversionFileName.substringAfterLast(".") != "mov") conversionFile.delete()
+            if (conversionFileName.substringAfterLast(".") != "gif") conversionFile.delete()
 
             log.info("\u001B[34mffmpeg 프로세스가 정상적으로 처리되어 {} 파일이 {} 파일로 변환되었습니다.\u001B[0m", fileName, conversionFileName)
             FileResponseObject(conversionFileName, fileBytes)

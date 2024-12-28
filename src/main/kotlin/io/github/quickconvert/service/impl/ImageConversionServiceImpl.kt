@@ -7,7 +7,6 @@ import io.github.quickconvert.types.ImageTypes
 import jakarta.servlet.http.HttpServletResponse
 import org.springframework.core.io.FileSystemResource
 import org.springframework.http.HttpHeaders
-import org.springframework.http.MediaType
 import org.springframework.stereotype.Service
 import java.io.File
 import java.net.URLDecoder
@@ -47,6 +46,6 @@ class ImageConversionServiceImpl : ImageConversionService() {
 
         fileResource.inputStream.use { it.copyTo(response.outputStream) }
         response.flushBuffer()
-        decodedFile.delete()
+        File("convert-$fileName").delete()
     }
 }

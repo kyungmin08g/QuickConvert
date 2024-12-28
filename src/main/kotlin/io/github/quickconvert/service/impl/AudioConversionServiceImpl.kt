@@ -20,6 +20,8 @@ class AudioConversionServiceImpl : AudioConversionService() {
             AudioTypes.Conversion.MP3.name -> AudioTypes.Conversion.MP3.conversion(fileInfo.fileName, fileInfo.fileByteArray)
             AudioTypes.Conversion.WAV.name -> AudioTypes.Conversion.WAV.conversion(fileInfo.fileName, fileInfo.fileByteArray)
             AudioTypes.Conversion.FLAC.name -> AudioTypes.Conversion.FLAC.conversion(fileInfo.fileName, fileInfo.fileByteArray)
+            AudioTypes.Conversion.AIFF.name -> AudioTypes.Conversion.AIFF.conversion(fileInfo.fileName, fileInfo.fileByteArray)
+            AudioTypes.Conversion.M4A.name -> AudioTypes.Conversion.M4A.conversion(fileInfo.fileName, fileInfo.fileByteArray)
             AudioTypes.Conversion.AAC.name -> AudioTypes.Conversion.AAC.conversion(fileInfo.fileName, fileInfo.fileByteArray)
             else -> FileResponseObject("none", null)
         }

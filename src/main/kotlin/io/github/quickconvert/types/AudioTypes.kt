@@ -11,7 +11,6 @@ import java.io.BufferedReader
 import java.io.ByteArrayInputStream
 import java.io.File
 import java.io.InputStreamReader
-import java.util.*
 
 @Slf4j
 @Component
@@ -24,52 +23,126 @@ object AudioTypes : FFmpegProcess {
 
     enum class Conversion(val fileType: String) : io.github.quickconvert.service.Conversion {
         MP3("mp3") {
+            /*
+                MP3 : O
+                WAV : O
+                FLAC : O
+                AIFF : O
+                M4A : O
+                AAC : O
+             */
             override fun conversion(fileName: String, fileByteArray: ByteArray): FileResponseObject {
                 val conversionFileName = "${fileName.substringBeforeLast(".").replace(" ", "")}.${this.fileType}"
                 val filename = "${fileName.substringBeforeLast(".").replace(" ", "")}.${fileName.substringAfterLast(".")}"
 
                 val restorationFile = File(filename).also { it.createNewFile(); it.writeBytes(fileByteArray) }
                 val command = """
-                   ffmpeg -err_detect ignore_err -i ${restorationFile.absolutePath} -c:a libmp3lame -qscale:a 0 -b:a 320k $conversionFileName
+                   ffmpeg -err_detect ignore_err -i ${restorationFile.absolutePath} -c:a libmp3lame -qscale:a 0 -b:a 320k convert-$conversionFileName
                 """
 
                 return ffmpegProcess(command, filename, conversionFileName, fileByteArray)
             }
         },
         WAV("wav") {
+            /*
+                MP3 : O
+                WAV : O
+                FLAC : O
+                AIFF : O
+                M4A : O
+                AAC : O
+             */
             override fun conversion(fileName: String, fileByteArray: ByteArray): FileResponseObject {
                 val conversionFileName = "${fileName.substringBeforeLast(".").replace(" ", "")}.${this.fileType}"
                 val filename = "${fileName.substringBeforeLast(".").replace(" ", "")}.${fileName.substringAfterLast(".")}"
 
                 val restorationFile = File(filename).also { it.createNewFile(); it.writeBytes(fileByteArray) }
                 val command = """
-                   ffmpeg -err_detect ignore_err -i ${restorationFile.absolutePath} -c:a pcm_s24le $conversionFileName
+                   ffmpeg -err_detect ignore_err -i ${restorationFile.absolutePath} -c:a pcm_s24le convert-$conversionFileName
                 """
 
                 return ffmpegProcess(command, filename, conversionFileName, fileByteArray)
             }
         },
         FLAC("flac") {
+            /*
+                MP3 : O
+                WAV : O
+                FLAC : O
+                AIFF : O
+                M4A : O
+                AAC : O
+             */
             override fun conversion(fileName: String, fileByteArray: ByteArray): FileResponseObject {
                 val conversionFileName = "${fileName.substringBeforeLast(".").replace(" ", "")}.${this.fileType}"
                 val filename = "${fileName.substringBeforeLast(".").replace(" ", "")}.${fileName.substringAfterLast(".")}"
 
                 val restorationFile = File(filename).also { it.createNewFile(); it.writeBytes(fileByteArray) }
                 val command = """
-                   ffmpeg -err_detect ignore_err -i ${restorationFile.absolutePath} -c:a flac -compression_level 12 $conversionFileName
+                   ffmpeg -err_detect ignore_err -i ${restorationFile.absolutePath} -c:a flac -compression_level 12 convert-$conversionFileName
+                """
+
+                return ffmpegProcess(command, filename, conversionFileName, fileByteArray)
+            }
+        },
+        AIFF("aiff") {
+            /*
+                MP3 : O
+                WAV : O
+                FLAC : O
+                AIFF : O
+                M4A : O
+                AAC : O
+             */
+            override fun conversion(fileName: String, fileByteArray: ByteArray): FileResponseObject {
+                val conversionFileName = "${fileName.substringBeforeLast(".").replace(" ", "")}.${this.fileType}"
+                val filename = "${fileName.substringBeforeLast(".").replace(" ", "")}.${fileName.substringAfterLast(".")}"
+
+                val restorationFile = File(filename).also { it.createNewFile(); it.writeBytes(fileByteArray) }
+                val command = """
+                   ffmpeg -err_detect ignore_err -i ${restorationFile.absolutePath} -c:a pcm_s16le convert-$conversionFileName
+                """
+
+                return ffmpegProcess(command, filename, conversionFileName, fileByteArray)
+            }
+        },
+        M4A("m4a") {
+            /*
+                MP3 : O
+                WAV : O
+                FLAC : O
+                AIFF : O
+                M4A : O
+                AAC : O
+             */
+            override fun conversion(fileName: String, fileByteArray: ByteArray): FileResponseObject {
+                val conversionFileName = "${fileName.substringBeforeLast(".").replace(" ", "")}.${this.fileType}"
+                val filename = "${fileName.substringBeforeLast(".").replace(" ", "")}.${fileName.substringAfterLast(".")}"
+
+                val restorationFile = File(filename).also { it.createNewFile(); it.writeBytes(fileByteArray) }
+                val command = """
+                   ffmpeg -err_detect ignore_err -i ${restorationFile.absolutePath} -c:a aac -b:a 192k convert-$conversionFileName
                 """
 
                 return ffmpegProcess(command, filename, conversionFileName, fileByteArray)
             }
         },
         AAC("aac") {
+            /*
+                MP3 : O
+                WAV : O
+                FLAC : O
+                AIFF : O
+                M4A : O
+                AAC : O
+             */
             override fun conversion(fileName: String, fileByteArray: ByteArray): FileResponseObject {
                 val conversionFileName = "${fileName.substringBeforeLast(".").replace(" ", "")}.${this.fileType}"
                 val filename = "${fileName.substringBeforeLast(".").replace(" ", "")}.${fileName.substringAfterLast(".")}"
 
                 val restorationFile = File(filename).also { it.createNewFile(); it.writeBytes(fileByteArray) }
                 val command = """
-                   ffmpeg -err_detect ignore_err -i ${restorationFile.absolutePath} -c:a libfdk_aac -b:a 320k $conversionFileName
+                   ffmpeg -i ${restorationFile.absolutePath} -c:a aac -b:a 320k convert-$conversionFileName
                 """
 
                 return ffmpegProcess(command, filename, conversionFileName, fileByteArray)
@@ -119,12 +192,13 @@ object AudioTypes : FFmpegProcess {
                                 }}GB / $lastConvertSize"
                             } else {
                                 "${convertSizeMB.toString().let {
-                                    it.substring(0, it.lastIndexOf(".") + 3)
+                                    if (it.lastIndexOf(".").toString().length == 2) it.substring(0, it.lastIndexOf(".") + 2)
+                                    else it.substring(0, it.lastIndexOf(".") + 3)
                                 }}MB / $lastConvertSize"
                             }
                         } else { // MB와 GB가 아닐 경우
                             "${convertSizeKB.toString().let {
-                                if ((it.lastIndexOf(".") + 1).toString().length < 3) it.substring(0, it.lastIndexOf(".") + 2)
+                                if ((it.lastIndexOf(".")).toString().length <= 2) it.substring(0, it.lastIndexOf(".") + 2)
                                 else it.substring(0, it.lastIndexOf(".") + 3)
                             }}KB / $lastConvertSize"
                         }
@@ -136,18 +210,18 @@ object AudioTypes : FFmpegProcess {
             }
         }
 
-        val conversionFile = File(conversionFileName)
+        val conversionFile = File("convert-$conversionFileName")
         val fileBytes = conversionFile.readBytes()
 
         return if (process.waitFor() != 0) {
-            log.error("\u001B[31mffmpeg 프로세스를 실행하던 도중 문제가 발생했습니다.\u001B[0m")
             File(fileName).delete()
             conversionFile.delete()
+            log.error("\u001B[31mffmpeg 프로세스를 실행하던 도중 문제가 발생했습니다.\u001B[0m")
             return FileResponseObject("none", null)
         } else {
-            log.info("\u001B[34mffmpeg 프로세스가 정상적으로 처리되어 {} 파일이 {} 파일로 변환되었습니다.\u001B[0m", fileName, conversionFileName)
             File(fileName).delete()
             conversionFile.delete()
+            log.info("\u001B[34mffmpeg 프로세스가 정상적으로 처리되어 {} 파일이 {} 파일로 변환되었습니다.\u001B[0m", fileName, conversionFileName)
             FileResponseObject(conversionFileName, fileBytes)
         }
     }
