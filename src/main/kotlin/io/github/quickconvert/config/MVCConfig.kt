@@ -8,7 +8,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer
 @Configuration
 class MVCConfig : WebMvcConfigurer {
     override fun addViewControllers(registry: ViewControllerRegistry) {
-        registry.addViewController("/").setViewName("home")
+//        registry.addViewController("/").setViewName("home")
     }
 
     override fun addCorsMappings(registry: CorsRegistry) {

@@ -411,6 +411,13 @@
             width: 600px;
             color: #555;
         }
+
+        /*#explanation {*/
+        /*    padding-top: 150px;*/
+        /*    font-size: 14px;*/
+        /*    width: 600px;*/
+        /*    color: #555;*/
+        /*}*/
     </style>
 </head>
 <body>
@@ -514,6 +521,7 @@
             <div id="loading-text">업로드 중..</div>
             <div id="file-size">잠시만 기다려주세요. 파일의 크기가 클수록 오래걸립니다.</div>
         </div>
+<!--        <div id="explanation">파일 크기는 예측된 값에 기반한 추정치이므로 실제 크기와 약간의 차이가 발생할 수 있습니다.</div>-->
 <!--        <div id="loading-container">-->
 <!--            <div class="spinner"></div>-->
 <!--            <div id="file-size">0KB</div>-->
@@ -1103,6 +1111,7 @@
 
         const fileSize = document.getElementById('file-size');
         const loadingText = document.getElementById('loading-text');
+        // const fileSizeExplanation = document.getElementById('explanation');
 
         const fileUploadForm = document.getElementById('file-upload-form');
         const type = document.getElementsByClassName('type');
@@ -1159,7 +1168,8 @@
                     document.body.appendChild(link);
                     link.click();
                     document.body.removeChild(link);
-                    location.reload();
+                    // location.reload();
+                    loadingContainer.style.display = 'none';
                 } else if (data.fileName !== 'none') {
                     const link = document.createElement("a");
                     link.href = `/api/v1/fileDownload?filename=${encodeURIComponent(data.fileName)}`
@@ -1235,11 +1245,11 @@
             }
 
             // 이건 프로모션 적용하면 하자.ㅋㅋ 업로드 용량을 제한해버리면 무료가 아니잖어...
-            if (file.size > (1024 * 60) * 1024) {
-                alert('60MB까지 업로드 가능합니다.');
-                fileInput.value = '';
-                fileNameDisplay.innerText = '';
-            }
+            // if (file.size > (1024 * 60) * 1024) {
+            //     alert('60MB까지 업로드 가능합니다.');
+            //     fileInput.value = '';
+            //     fileNameDisplay.innerText = '';
+            // }
         }
 
         // 카테고리가 변경될 경우
@@ -1262,14 +1272,13 @@
             stompClient = Stomp.over(socket);
             stompClient.connect({}, (frame) => {
                 console.log('Connected: ' + frame);
-                stompClient?.subscribe('/sub/1', function(responseMessage) {
-                    console.log(responseMessage.body);
-                    if (responseMessage.body.includes('upload')) {
+                stompClient?.subscribe('/sub/{{id}}', function(message) {
+                    if (message.body.includes('upload')) {
                         loadingText.innerText = '업로드 중..';
                         fileSize.textContent = '잠시만 기다려주세요. 파일의 크기가 클수록 오래걸립니다.';
                     } else {
                         loadingText.innerText = '복구 및 변환 중..';
-                        fileSize.textContent = responseMessage.body;
+                        fileSize.textContent = message.body;
                     }
                 })
             });
